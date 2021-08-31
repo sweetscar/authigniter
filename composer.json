@@ -1,0 +1,27 @@
+{
+    "name": "sweetscar/authigniter",
+    "description": "Authentication and authorization library for Codeigniter 4",
+    "type": "library",
+    "require": {
+        "php": "^8.0"
+    },
+    "require-dev": {
+        "codeigniter4/framework": "^4.1"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "SweetScar\\AuthIgniter\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Rizky Kurniawan",
+            "email": "contact.rizkykurniawan@gmail.com",
+            "homepage": "https://rizkykurniawan.id/",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": false
+}
