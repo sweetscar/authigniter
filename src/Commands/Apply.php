@@ -50,16 +50,16 @@ class Apply extends BaseCommand
 
     public function run(array $params)
     {
-        $this->setSourcePath();
+        // $this->setSourcePath();
 
-        $map = directory_map($this->sourcePath . '/Database/Migrations');
+        // $map = directory_map($this->sourcePath . '/Database/Migrations');
 
-        foreach ($map as $file) {
-            $content = file_get_contents("{$this->sourcePath}/Database/Migrations/{$file}");
-            $content = $this->replaceNamespace($content, 'Sweetscar\Authigniter\Database\Migrations', 'Database\Migrations');
+        // foreach ($map as $file) {
+        //     $content = file_get_contents("{$this->sourcePath}/Database/Migrations/{$file}");
+        //     $content = $this->replaceNamespace($content, 'Sweetscar\Authigniter\Database\Migrations', 'Database\Migrations');
 
-            $this->writeFile("Database/Migrations/{$file}", $content);
-        }
+        //     $this->writeFile("Database/Migrations/{$file}", $content);
+        // }
 
         CLI::write('Remember to run `php spark migrate` to migrate the database.', 'yellow');
     }
