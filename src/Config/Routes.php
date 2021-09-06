@@ -12,10 +12,11 @@ $routes->group('', ['namespace' => 'SweetScar\AuthIgniter\Controllers'], functio
         $routes->get('forgot-password', 'AuthIgniter::forgotPassword', ['as' => 'authigniter:forgotPassword']);
         $routes->post('attempt-forgot-password', 'AuthIgniter::attemptForgotPassword', ['as' => 'authigniter:attemptForgotPassword']);
         $routes->get('reset-password', 'AuthIgniter::resetPassword', ['as' => 'authigniter:resetPassword']);
-        $routes->post('attempt-reset-password', 'AuthIgniter::attemptResetPassword', ['as' => 'authigniter:attemptResetPassword']);
+        $routes->post('attempt-reset-password/(:any)', 'AuthIgniter::attemptResetPassword/$1', ['as' => 'authigniter:attemptResetPassword']);
+        $routes->get('reset-password-result', 'AuthIgniter::resetPasswordResult', ['as' => 'authigniter:resetPasswordResult']);
     }
 
-    if (config('AuthIgniter')->enableEmailVerification) {
+    if (config('AuthIgniter')->requireEmailVerification) {
         $routes->get('verify-email', 'AuthIgniter::verifyEmail', ['as' => 'authigniter:verifyEmail']);
     }
 });

@@ -6,27 +6,31 @@
         <div class="col-lg-4 mx-auto">
             <div class="card shadow">
                 <div class="card-header py-3">
-                    <h4 class="text-center"><?= lang($config->registerPageTitle) ?></h4>
+                    <h4 class="text-center"><?= lang('AuthIgniter.registerPageTitle') ?></h4>
                 </div>
                 <div class="card-body">
                     <form action="<?= route_to('authigniter:attemptRegister') ?>" method="POST">
                         <?= csrf_field() ?>
 
                         <div class="mb-3">
-                            <input type="email" name="email" id="email" class="form-control" placeholder="<?= lang('AuthIgniter.email') ?>">
+                            <input type="email" name="email" id="email" class="form-control <?= (session('errors.email')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.email') ?>" value="<?= old('email') ?>">
+                            <span class="invalid-feedback"><?= session('errors.email') ?></span>
                         </div>
 
                         <?php if ($config->enableUsername) : ?>
                             <div class="mb-3">
-                                <input type="text" name="username" id="username" class="form-control" placeholder="<?= lang('AuthIgniter.username') ?>">
+                                <input type="text" name="username" id="username" class="form-control <?= (session('errors.username')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.username') ?>" value="<?= old('username') ?>">
+                                <span class="invalid-feedback"><?= session('errors.username') ?></span>
                             </div>
                         <?php endif; ?>
 
                         <div class="mb-3">
-                            <input type="password" name="password" id="password" class="form-control" placeholder="<?= lang('AuthIgniter.password') ?>">
+                            <input type="password" name="password" id="password" class="form-control <?= (session('errors.password')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.password') ?>">
+                            <span class="invalid-feedback"><?= session('errors.password') ?></span>
                         </div>
                         <div class="mb-3">
-                            <input type="password" name="repeat-password" id="repeat-password" class="form-control" placeholder="<?= lang('AuthIgniter.repeatPassword') ?>">
+                            <input type="password" name="repeat-password" id="repeat-password" class="form-control <?= (session('errors.repeat-password')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.repeatPassword') ?>">
+                            <span class="invalid-feedback"><?= session('errors.repeat-password') ?></span>
                         </div>
 
                         <div>

@@ -6,14 +6,16 @@
         <div class="col-lg-4 mx-auto">
             <div class="card shadow">
                 <div class="card-header py-3">
-                    <h4 class="text-center"><?= lang($config->forgotPasswordPageTitle) ?></h4>
+                    <h4 class="text-center"><?= lang('AuthIgniter.requestResetPasswordLink') ?></h4>
                 </div>
                 <div class="card-body">
+                    <?= view('SweetScar\AuthIgniter\Views\_message_block') ?>
                     <form action="<?= route_to('authigniter:attemptForgotPassword') ?>" method="POST">
                         <?= csrf_field() ?>
 
                         <div class="mb-3">
-                            <input type="email" name="email" id="email" class="form-control" placeholder="<?= lang('AuthIgniter.email') ?>">
+                            <input type="email" name="email" id="email" class="form-control <?= (session('errors.email')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.email') ?>" value="<?= old('email') ?>">
+                            <span class="invalid-feedback"><?= session('errors.email') ?></span>
                         </div>
 
                         <div>
