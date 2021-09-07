@@ -14,7 +14,7 @@
                         <?= csrf_field() ?>
 
                         <div class="mb-3">
-                            <input type="email" name="email" id="email" class="form-control <?= (session('errors.email')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.email') ?>" value="<?= old('email') ?>">
+                            <input type="email" name="email" id="email" class="form-control <?= (session('errors.email')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.email') ?>" value="<?= old('email') ?>" autofocus>
                             <span class="invalid-feedback"><?= session('errors.email') ?></span>
                         </div>
 

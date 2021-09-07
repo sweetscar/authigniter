@@ -41,4 +41,13 @@ return [
         'success' => 'Your account password has been updated successfully.',
         'failed' => 'Failed to update password for your account.'
     ],
+    'exception' => [
+        'validateWithoutPassword' => 'Cannot validate without password credential.',
+        'toManyCredential' => 'You may only validate against 1 credential other than a password.',
+    ],
+    'badAttempt' => 'Unable to log you in. Please check your credentials.',
+    'accountNotActivated' => 'Your account is currently not activated.',
+    'unverifiedEmailAddress' => 'Your email address has not been verified for {0, number} days, you cannot login until your email address is successfully verified.',
+    'loginSuccess' => 'Login success.',
+    'logoutSuccess' => 'You have successfully logged out.',
 ];

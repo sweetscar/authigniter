@@ -13,4 +13,9 @@ class Role extends Model
     protected $useSoftDeletes = false;
     protected $allowedFields = ['name', 'description'];
     protected $useTimestamps = false;
+
+    public function deleteAll()
+    {
+        return $this->builder($this->table)->emptyTable();
+    }
 }

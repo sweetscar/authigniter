@@ -2,49 +2,35 @@
 
 namespace SweetScar\AuthIgniter\Libraries\Authentication;
 
-use CodeIgniter\Events;
-use CodeIgniter\Model;
-use SweetScar\AuthIgniter\Config\AuthIgniter as AuthConfig;
-use SweetScar\AuthIgniter\Entities\User;
+use SweetScar\AuthIgniter\Models\User as UserModel;
+use SweetScar\AuthIgniter\Models\Login as LoginModel;
 
 class BaseAuthentication
 {
-    protected $user;
-    protected $config;
     protected $error;
+    protected $config;
+    protected $loginModel;
+    protected $userModel;
 
     public function __construct($config)
     {
         $this->config = $config;
+        $this->userModel = new UserModel();
+        $this->loginModel = new LoginModel();
     }
 
-    public function error()
+    public function error(): string
     {
         return $this->error;
     }
 
-    public function login(User $user = null): bool
+    protected function recordLoginAttempt(string $login, string $userId = null, string $ipAddress = null, bool $success)
     {
-        if (empty($user)) {
-            $this->user = null;
-            return false;
-        }
-
-        $this->user = $user;
-
-        $ipAddress = service('request')->getIPAddress();
-
-        if (ENVIRONMENT !== 'testing') {
-            session()->regenerate();
-        }
-
-        session()->set('logged_in', $this->user->id);
-
-        return true;
-    }
-
-    public function user()
-    {
-        return $this->user;
+        return $this->loginModel->insert([
+            'login' => $login,
+            'user_id' => $userId,
+            'ip_address' => $ipAddress,
+            'success' => (int)$success
+        ]);
     }
 }

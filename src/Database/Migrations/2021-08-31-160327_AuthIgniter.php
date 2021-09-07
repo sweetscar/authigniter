@@ -16,6 +16,7 @@ class AuthIgniter extends Migration
         $this->createUserRolesTable();
         $this->createEmailVerificationTokensTable();
         $this->createResetPasswordTokensTable();
+        $this->createLoginsTable();
     }
 
     /**
@@ -33,6 +34,7 @@ class AuthIgniter extends Migration
         $this->forge->dropTable('authigniter_user_roles', true);
         $this->forge->dropTable('authigniter_email_verification_tokens', true);
         $this->forge->dropTable('authigniter_reset_password_tokens', true);
+        $this->forge->dropTable('authigniter_logins', true);
     }
 
     /**
@@ -72,7 +74,7 @@ class AuthIgniter extends Migration
 
         $this->forge->addPrimaryKey('id');
         $this->forge->addUniqueKey('name');
-        
+
         $this->forge->createTable('authigniter_roles', true);
     }
 
@@ -96,6 +98,9 @@ class AuthIgniter extends Migration
         $this->forge->createTable('authigniter_user_roles', true);
     }
 
+    /**
+     * Create authigniter_email_verification_tokens table
+     */
     protected function createEmailVerificationTokensTable()
     {
         $this->forge->addField([
@@ -113,6 +118,9 @@ class AuthIgniter extends Migration
         $this->forge->createTable('authigniter_email_verification_tokens', true);
     }
 
+    /**
+     * Create authigniter_reset_password_tokens table
+     */
     protected function createResetPasswordTokensTable()
     {
         $this->forge->addField([
@@ -130,5 +138,25 @@ class AuthIgniter extends Migration
         $this->forge->addUniqueKey('token');
 
         $this->forge->createTable('authigniter_reset_password_tokens', true);
+    }
+
+    /**
+     * Create authigniter_logins table
+     */
+    protected function createLoginsTable()
+    {
+        $this->forge->addField([
+            'id'         => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'login'      => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
+            'user_id'    => ['type' => 'varchar', 'constraint' => 255, 'null' => true], // Only for successful logins
+            'ip_address' => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
+            'success'    => ['type' => 'tinyint', 'constraint' => 1],
+            'created_at' => ['type' => 'datetime'],
+            'updated_at' => ['type' => 'datetime'],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addKey('email');
+        $this->forge->addKey('user_id');
+        $this->forge->createTable('authigniter_logins', true);
     }
 }

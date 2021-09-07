@@ -16,15 +16,18 @@ class AuthIgniter extends BaseController
     protected $validation;
     protected $emailVerificationToken;
     protected $resetPasswordToken;
+    protected $authentication;
 
     public function __construct()
     {
         session();
+
         $this->session = service('session');
         $this->config = config('AuthIgniter');
         $this->validation = service('validation');
         $this->emailVerificationToken = new EmailVerificationToken();
         $this->resetPasswordToken = new ResetPasswordToken();
+        $this->authentication = service('authentication');
     }
 
     public function login()
@@ -59,11 +62,25 @@ class AuthIgniter extends BaseController
         $type = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         // start login attempt here
+        $attempt = $this->authentication->attempt([$type => $login, 'password' => $password]);
+
+        if (!$attempt) {
+            return redirect('authigniter:login')->with('authigniter_error', $this->authentication->error());
+        }
+
+        $redirectURL = session('redirect_url') ?? site_url($this->config->successLoginRedirect);
+
+        unset($_SESSION['redirect_url']);
+
+        return redirect()->to($redirectURL)->with('authigniter_info', lang('AuthIgniter.loginSuccess'));
     }
 
     public function logout()
     {
-        # Not Implemented
+        if ($this->authentication->destroy()) {
+            return redirect('authigniter:login')->with('authigniter_info', lang('AuthIgniter.logoutSuccess'));
+        }
+        return redirect()->back();
     }
 
     public function register()
@@ -76,6 +93,12 @@ class AuthIgniter extends BaseController
     public function attemptRegister()
     {
 
+        $minimumPasswordLength = ($this->config->minimumPasswordLength < 6 || $this->config->minimumPasswordLength > 15) ? 6 : $this->config->minimumPasswordLength;
+        $maximumPasswordLength = ($this->config->maximumPasswordLength < 15 || $this->config->maximumPasswordLength > 30) ? 30 : $this->config->maximumPasswordLength;
+
+        $minimumUsernameLength = ($this->config->minimumUsernameLength < 3 || $this->config->minimumUsernameLength > 6) ? 3 : $this->config->minimumUsernameLength;
+        $maximumUsernameLength = ($this->config->maximumUsernameLength < 6 || $this->config->maximumUsernameLength > 30) ? 30 : $this->config->maximumUsernameLength;
+
         $rules = [
             'email' => [
                 'label' => lang('AuthIgniter.email'),
@@ -83,7 +106,7 @@ class AuthIgniter extends BaseController
             ],
             'password' => [
                 'label' => lang('AuthIgniter.password'),
-                'rules' => 'required|min_length[8]'
+                'rules' => "required|min_length[$minimumPasswordLength]|max_length[$maximumPasswordLength]"
             ],
             'repeat-password' => [
                 'label' => lang('AuthIgniter.repeatPassword'),
@@ -93,7 +116,8 @@ class AuthIgniter extends BaseController
 
         if ($this->config->enableUsername) {
             $rules['username'] = [
-                'rules' => 'required|min_length[3]|max_length[30]|is_unique[users.username]alpha_numeric'
+                'label' => lang('AuthIgniter.username'),
+                'rules' => "required|min_length[$minimumUsernameLength]|max_length[$maximumUsernameLength]|is_unique[users.username]alpha_numeric"
             ];
         }
 
@@ -110,7 +134,7 @@ class AuthIgniter extends BaseController
         }
         $user->setPassword($this->request->getPost('password'));
         ($this->config->userActivatedAsDefault) ? $user->activate() : $user->deactivate();
-        ($this->config->requireEmailVerification) ? $user->setEmailIsVerified(false) : $user->setEmailIsVerified(true);
+        ($this->config->requireEmailVerification) ? $user->unverifyEmail() : $user->setEmailIsVerified(true);
 
         $userAccount = Account::create($user, $this->config->defaultUserRole);
 
@@ -120,6 +144,9 @@ class AuthIgniter extends BaseController
                 if ($token) {
                     Email::sendEmailVerificationLink($user->email, $token);
                 }
+            }
+            if (in_array('registration_success', $this->config->activeEmailNotifications)) {
+                Email::sendRegistrationSuccessNotification($userAccount);
             }
             return redirect('authigniter:login')->with('authigniter_info', lang('AuthIgniter.registrationSuccess'));
         }
@@ -198,7 +225,7 @@ class AuthIgniter extends BaseController
         }
 
         $emailSent = Email::sendResetPasswordLink($email, $token);
-        
+
         if (!$emailSent) {
             return redirect('authigniter:forgotPassword')->with('authigniter_error', lang('AuthIgniter.resetPassword.failedToSendLink'));
         }
@@ -256,6 +283,9 @@ class AuthIgniter extends BaseController
             return redirect('authigniter:resetPasswordResult')->with('reset_password_result', ['type' => 'error', 'message' => lang('AuthIgniter.resetPassword.failed')]);
         }
         $this->resetPasswordToken->delete($resetPasswordToken);
+        if (in_array('password_changed', $this->config->activeEmailNotifications)) {
+            Email::sendPasswordChangedNotification($user);
+        }
         return redirect('authigniter:resetPasswordResult')->with('reset_password_result', ['type' => 'success', 'message' => lang('AuthIgniter.resetPassword.success')]);
     }
 

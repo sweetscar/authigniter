@@ -36,4 +36,9 @@ class UserRole extends Model
 
         return false;
     }
+
+    public function deleteAll()
+    {
+        return $this->builder->emptyTable();
+    }
 }

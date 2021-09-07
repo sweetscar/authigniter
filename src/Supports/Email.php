@@ -3,6 +3,7 @@
 namespace SweetScar\AuthIgniter\Supports;
 
 use SweetScar\AuthIgniter\Libraries\Email\Email as Sender;
+use SweetScar\AuthIgniter\Entities\User;
 
 class Email
 {
@@ -37,6 +38,40 @@ class Email
         $sender->setToEmail($toEmail);
         $sender->setToName($toEmail);
         $sender->setSubject('[AuthIgniter] Reset Password Link');
+        $sender->setContent($content);
+
+        return $sender->send();
+    }
+
+    public static function sendPasswordChangedNotification(User $user): bool
+    {
+        $config = config('AuthIgniter');
+        $content = view($config->views['email:password_changed_notification'], ['user' => $user]);
+
+        $sender = new Sender();
+
+        $sender->setFromEmail('r24072020@pepisandbox.com');
+        $sender->setFromName('SweetScar\AuthIgniter');
+        $sender->setToEmail($user->email);
+        $sender->setToName($user->email);
+        $sender->setSubject('[AuthIgniter] Your Account Password Was Changed');
+        $sender->setContent($content);
+
+        return $sender->send();
+    }
+
+    public static function sendRegistrationSuccessNotification(User $user): bool
+    {
+        $config = config('AuthIgniter');
+        $content = view($config->views['email:registration_success_notification'], ['user' => $user]);
+
+        $sender = new Sender();
+
+        $sender->setFromEmail('r24072020@pepisandbox.com');
+        $sender->setFromName('SweetScar\AuthIgniter');
+        $sender->setToEmail($user->email);
+        $sender->setToName($user->email);
+        $sender->setSubject('[AuthIgniter] Thank You For Registering Your Account');
         $sender->setContent($content);
 
         return $sender->send();

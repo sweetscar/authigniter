@@ -35,7 +35,7 @@ class Apply extends BaseCommand
      *
      * @var string
      */
-    protected $description = 'Apply authigniter functionality into the current application.';
+    protected $description = 'Apply AuthIgniter functionality into the current application.';
 
     /** 
      * Source path

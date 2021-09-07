@@ -11,8 +11,6 @@ class User extends Model
     protected $primaryKey = 'id';
     protected $returnType = UserEntity::class;
     protected $useSoftDeletes = true;
-    protected $allowedFields = [
-        'id', 'email', 'username', 'password', 'active', 'email_is_verified'
-    ];
+    protected $allowedFields = ['id', 'email', 'username', 'password', 'active', 'email_is_verified'];
     protected $useTimestamps = true;
 }

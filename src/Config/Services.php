@@ -2,20 +2,27 @@
 
 namespace SweetScar\AuthIgniter\Config;
 
-use Config\Services as BaseServices;
+use CodeIgniter\Config\BaseService;
+use SweetScar\AuthIgniter\Libraries\Authorization\DefaultAuthorization;
 
-class Services extends BaseServices
+class Services extends BaseService
 {
-    public static function authentication(string $authenticationLibrary = 'local', bool $getShared = true)
+    public static function authentication(string $library = 'local_authentication', bool $getShared = true)
     {
-        if ($getShared) {
-            return self::getSharedInstance('authentication');
-        }
+
+        if ($getShared) return static::getSharedInstance('authentication', $library);
 
         $config = config('AuthIgniter');
-        $class = $config->authenticationLibs[$authenticationLibrary];
+        $class = $config->authenticationLibraries[$library];
         $instance = new $class($config);
 
         return $instance;
+    }
+
+    public static function authorization(bool $getShared = true)
+    {
+        if ($getShared) return static::getSharedInstance('authorization');
+
+        return new DefaultAuthorization();
     }
 }

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Changed Notification</title>
+    <title>Registration Success Notification</title>
     <style>
         table {
             width: 100%;
@@ -79,14 +79,8 @@
         <tr>
             <td>
                 <div class="mail-body">
-                    <p><strong>Hi <?= $user->email ?>,</strong></p>
-                    <p>We found that your account password has been changed. If this is not you, immediately contact the administrator to review the password changes on your account.</p>
-                    <p>If this is you, please ignore this email.</p>
-                    <p>
-                        <strong>Password changed successfully on:</strong>
-                        <br>
-                        <?= $user->updated_at ?>
-                    </p>
+                    <h3><strong>Hi <?= $user->email ?>,</strong></h3>
+                    <h3>Thank you for registering your account</h3>
                 </div>
             </td>
         </tr>

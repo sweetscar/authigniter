@@ -25,7 +25,7 @@ class Token
         return false;
     }
 
-    protected function setErrorMessage(string $errorMessage): Token
+    protected function setErrorMessage(string $errorMessage)
     {
         $this->errorMessage = $errorMessage;
 
@@ -37,7 +37,7 @@ class Token
         return $this->errorMessage;
     }
 
-    protected function setTokenOwner(string $tokenOwner): Token
+    protected function setTokenOwner(string $tokenOwner)
     {
         $this->tokenOwner = $tokenOwner;
 

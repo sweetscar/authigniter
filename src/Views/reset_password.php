@@ -14,7 +14,7 @@
                         <?= csrf_field() ?>
 
                         <div class="mb-3">
-                            <input type="password" name="new-password" id="new-password" class="form-control <?= (session('errors.new-password')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.newPassword') ?>">
+                            <input type="password" name="new-password" id="new-password" class="form-control <?= (session('errors.new-password')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.newPassword') ?>" autofocus>
                             <span class="invalid-feedback"><?= session('errors.new-password') ?></span>
                         </div>
                         <div class="mb-3">

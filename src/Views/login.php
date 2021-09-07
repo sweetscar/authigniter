@@ -16,12 +16,12 @@
 
                         <?php if ($config->enableUsername) : ?>
                             <div class="mb-3">
-                                <input type="text" name="login" id="login" class="form-control <?= (session('errors.login')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.usernameOrEmail') ?>" value="<?= old('login') ?>">
+                                <input type="text" name="login" id="login" class="form-control <?= (session('errors.login')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.usernameOrEmail') ?>" value="<?= old('login') ?>" autofocus>
                                 <span class="invalid-feedback"><?= session('errors.login') ?></span>
                             </div>
                         <?php else : ?>
                             <div class="mb-3">
-                                <input type="email" name="login" id="login" class="form-control <?= (session('errors.login')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.email') ?>" value="<?= old('login') ?>">
+                                <input type="email" name="login" id="login" class="form-control <?= (session('errors.login')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.email') ?>" value="<?= old('login') ?>" autofocus>
                                 <span class="invalid-feedback"><?= session('errors.login') ?></span>
                             </div>
                         <?php endif; ?>
