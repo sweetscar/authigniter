@@ -2,6 +2,7 @@
 
 namespace SweetScar\AuthIgniter\Controllers;
 
+use CodeIgniter\Router\Exceptions\RedirectException;
 use App\Controllers\BaseController;
 use SweetScar\AuthIgniter\Entities\User;
 use SweetScar\AuthIgniter\Supports\Account;
@@ -17,6 +18,7 @@ class AuthIgniter extends BaseController
     protected $emailVerificationToken;
     protected $resetPasswordToken;
     protected $authentication;
+    protected $account;
 
     public function __construct()
     {
@@ -28,10 +30,13 @@ class AuthIgniter extends BaseController
         $this->emailVerificationToken = new EmailVerificationToken();
         $this->resetPasswordToken = new ResetPasswordToken();
         $this->authentication = service('authentication');
+        $this->account = service('account');
     }
 
     public function login()
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
+
         $data['config'] = $this->config;
 
         return view($this->config->views['login'], $data);
@@ -39,6 +44,8 @@ class AuthIgniter extends BaseController
 
     public function attemptLogin()
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
+
         $rules = [
             'login' => [
                 'rules' => 'required'
@@ -61,7 +68,6 @@ class AuthIgniter extends BaseController
 
         $type = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        // start login attempt here
         $attempt = $this->authentication->attempt([$type => $login, 'password' => $password]);
 
         if (!$attempt) {
@@ -85,6 +91,8 @@ class AuthIgniter extends BaseController
 
     public function register()
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
+
         $data['config'] = $this->config;
 
         return view($this->config->views['register'], $data);
@@ -92,12 +100,19 @@ class AuthIgniter extends BaseController
 
     public function attemptRegister()
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
 
-        $minimumPasswordLength = ($this->config->minimumPasswordLength < 6 || $this->config->minimumPasswordLength > 15) ? 6 : $this->config->minimumPasswordLength;
-        $maximumPasswordLength = ($this->config->maximumPasswordLength < 15 || $this->config->maximumPasswordLength > 30) ? 30 : $this->config->maximumPasswordLength;
+        $minPasswordLength = $this->config->minimumPasswordLength;
+        $minPasswordLength = ($minPasswordLength < 6 || $minPasswordLength > 15) ? 6 : $minPasswordLength;
 
-        $minimumUsernameLength = ($this->config->minimumUsernameLength < 3 || $this->config->minimumUsernameLength > 6) ? 3 : $this->config->minimumUsernameLength;
-        $maximumUsernameLength = ($this->config->maximumUsernameLength < 6 || $this->config->maximumUsernameLength > 30) ? 30 : $this->config->maximumUsernameLength;
+        $maxPasswordLength = $this->config->maximumPasswordLength;
+        $maxPasswordLength = ($maxPasswordLength < 15 || $maxPasswordLength > 30) ? 30 : $maxPasswordLength;
+
+        $minUsernameLength = $this->config->minimumUsernameLength;
+        $minUsernameLength = ($minUsernameLength < 3 || $minUsernameLength > 6) ? 3 : $minUsernameLength;
+
+        $maxUsernameLength = $this->config->maximumUsernameLength;
+        $maxPasswordLength = ($maxUsernameLength < 6 || $maxUsernameLength > 30) ? 30 : $maxUsernameLength;
 
         $rules = [
             'email' => [
@@ -106,7 +121,7 @@ class AuthIgniter extends BaseController
             ],
             'password' => [
                 'label' => lang('AuthIgniter.password'),
-                'rules' => "required|min_length[$minimumPasswordLength]|max_length[$maximumPasswordLength]"
+                'rules' => "required|min_length[$minPasswordLength]|max_length[$maxPasswordLength]"
             ],
             'repeat-password' => [
                 'label' => lang('AuthIgniter.repeatPassword'),
@@ -117,7 +132,7 @@ class AuthIgniter extends BaseController
         if ($this->config->enableUsername) {
             $rules['username'] = [
                 'label' => lang('AuthIgniter.username'),
-                'rules' => "required|min_length[$minimumUsernameLength]|max_length[$maximumUsernameLength]|is_unique[users.username]alpha_numeric"
+                'rules' => "required|min_length[$minUsernameLength]|max_length[$maxUsernameLength]|is_unique[users.username]alpha_numeric"
             ];
         }
 
@@ -138,15 +153,14 @@ class AuthIgniter extends BaseController
 
         $userAccount = Account::create($user, $this->config->defaultUserRole);
 
+        $userAccount = $this->account->create($user, true);
+
         if ($userAccount) {
             if ($this->config->requireEmailVerification) {
                 $token = $this->emailVerificationToken->create($userAccount);
                 if ($token) {
                     Email::sendEmailVerificationLink($user->email, $token);
                 }
-            }
-            if (in_array('registration_success', $this->config->activeEmailNotifications)) {
-                Email::sendRegistrationSuccessNotification($userAccount);
             }
             return redirect('authigniter:login')->with('authigniter_info', lang('AuthIgniter.registrationSuccess'));
         }
@@ -189,6 +203,8 @@ class AuthIgniter extends BaseController
 
     public function forgotPassword()
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
+
         $data['config'] = $this->config;
 
         return view($this->config->views['forgot_password'], $data);
@@ -196,6 +212,8 @@ class AuthIgniter extends BaseController
 
     public function attemptForgotPassword()
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
+
         $rules = [
             'email' => [
                 'rules' => 'required|valid_email'
@@ -235,6 +253,8 @@ class AuthIgniter extends BaseController
 
     public function resetPassword()
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
+
         $token = $this->request->getGet('token');
         $data['config'] = $this->config;
         $data['resetPasswordToken'] = $token;
@@ -254,6 +274,8 @@ class AuthIgniter extends BaseController
 
     public function attemptResetPassword($resetPasswordToken)
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
+
         $rules = [
             'new-password' => [
                 'label' => lang('AuthIgniter.newPassword'),
@@ -291,10 +313,23 @@ class AuthIgniter extends BaseController
 
     public function resetPasswordResult()
     {
+        if ($this->authentication->check()) return redirect()->to(base_url());
+
         $data['config'] = $this->config;
         $data['type'] = session('reset_password_result.type') ?? 'error';
         $data['message'] = session('reset_password_result.message') ?? lang('AuthIgniter.errorHasOccured');
 
         return view($this->config->views['reset_password_result'], $data);
+    }
+
+    public function forbidden()
+    {
+        $forbidden = session()->getFlashData('forbidden');
+
+        if (is_null($forbidden)) throw new RedirectException('Page Not Found', 404);
+
+        $data['config'] = $this->config;
+        $data['forbiddenURL'] = session()->getFlashData('forbidden_url');
+        return view($this->config->views['forbidden'], $data);
     }
 }

@@ -61,7 +61,7 @@ class Role
         $userRole = new UserRoleModel();
 
         if (!$roles->deleteAll()) return false;
-        // $userRole->deleteAll();
+        $userRole->deleteAll();
         return true;
     }
 }

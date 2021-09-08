@@ -3,7 +3,9 @@
 namespace SweetScar\AuthIgniter\Config;
 
 use CodeIgniter\Config\BaseService;
+use SweetScar\AuthIgniter\Libraries\Account\DefaultAccountManager;
 use SweetScar\AuthIgniter\Libraries\Authorization\DefaultAuthorization;
+use SweetScar\AuthIgniter\Models\User;
 
 class Services extends BaseService
 {
@@ -24,5 +26,14 @@ class Services extends BaseService
         if ($getShared) return static::getSharedInstance('authorization');
 
         return new DefaultAuthorization();
+    }
+
+    public static function account(bool $getShared = true)
+    {
+        if ($getShared) return static::getSharedInstance('account');
+
+        $config = config('AuthIgniter');
+        $userModel = new User();
+        return new DefaultAccountManager($config, $userModel);
     }
 }

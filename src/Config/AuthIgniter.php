@@ -34,6 +34,7 @@ class AuthIgniter extends BaseConfig
         'reset_password' => 'SweetScar\AuthIgniter\Views\reset_password',
         'reset_password_result' => 'SweetScar\AuthIgniter\Views\reset_password_result',
         'verify_email_result' => 'SweetScar\AuthIgniter\Views\verify_email_result',
+        'forbidden' => 'SweetScar\AuthIgniter\Views\forbidden',
         'email:email_verification_link' => 'SweetScar\AuthIgniter\Views\Email\email_verification_link',
         'email:reset_password_link' => 'SweetScar\AuthIgniter\Views\Email\reset_password_link',
         'email:password_changed_notification' => 'SweetScar\AuthIgniter\Views\Email\password_changed_notification',
@@ -91,6 +92,12 @@ class AuthIgniter extends BaseConfig
     public $enableForgotPassword = false;
 
     /**
+     * Allow remembering
+     * 
+     * If the value is true, then the user can 
+     */
+
+    /**
      * Username feature.
      * 
      * If the value is true, the user will be asked to create a username when registering an account
@@ -135,11 +142,12 @@ class AuthIgniter extends BaseConfig
     /**
      * Email verification deadline.
      * 
-     * Email address verification deadline. The default value is 30 days from the first account created.
+     * The amount of time, in second that you want for email address verification deadline.
+     * The default value is 30 days from the first account created.
      * 
      * @var int
      */
-    public $emailVerificationDeadline = 30; // in day
+    public $emailVerificationDeadline = 30 * DAY;
 
     /**
      * Default user active status.
@@ -149,16 +157,6 @@ class AuthIgniter extends BaseConfig
      * @var bool
      */
     public $userActivatedAsDefault = true;
-
-    /**
-     * Auto Login.
-     * 
-     * If the value is true, the user will immediately log in when finished registering an account.
-     * This feature only works if using local authentication library.
-     * 
-     * @var bool
-     */
-    public $autoLoginAfterRegister = false;
 
     /**
      * Success login redirection.
@@ -202,7 +200,7 @@ class AuthIgniter extends BaseConfig
     /**
      * Token expiration time.
      * 
-     * Token expiration time for email verification token anda reset password token.
+     * The amount of time in seconds that token will expired.
      * 
      * @var array
      */

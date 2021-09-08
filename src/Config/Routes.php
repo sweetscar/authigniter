@@ -4,7 +4,7 @@ $routes->group('', ['namespace' => 'SweetScar\AuthIgniter\Controllers'], functio
 
     $routes->get('login', 'AuthIgniter::login', ['as' => 'authigniter:login']);
     $routes->post('attempt-login', 'AuthIgniter::attemptLogin', ['as' => 'authigniter:attemptLogin']);
-    $routes->get('logout', 'AuthIgniter::logout', ['as' => 'authigniter:logout']);
+    $routes->post('logout', 'AuthIgniter::logout', ['as' => 'authigniter:logout']);
 
     $routes->get('register', 'AuthIgniter::register', ['as' => 'authigniter:register']);
     $routes->post('attempt-register', 'AuthIgniter::attemptRegister', ['as' => 'authigniter:attemptRegister']);
@@ -20,4 +20,6 @@ $routes->group('', ['namespace' => 'SweetScar\AuthIgniter\Controllers'], functio
     if (config('AuthIgniter')->requireEmailVerification) {
         $routes->get('verify-email', 'AuthIgniter::verifyEmail', ['as' => 'authigniter:verifyEmail']);
     }
+
+    $routes->get('forbidden', 'AuthIgniter::forbidden', ['as' => 'authigniter:forbidden']);
 });

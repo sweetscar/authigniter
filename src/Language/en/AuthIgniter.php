@@ -50,4 +50,6 @@ return [
     'unverifiedEmailAddress' => 'Your email address has not been verified for {0, number} days, you cannot login until your email address is successfully verified.',
     'loginSuccess' => 'Login success.',
     'logoutSuccess' => 'You have successfully logged out.',
+    'pleaseLoginFirst' => 'Please login first before accessing this website.',
+    'forbiddenMessage' => 'Sorry, you don\'t have permission to access this page.'
 ];

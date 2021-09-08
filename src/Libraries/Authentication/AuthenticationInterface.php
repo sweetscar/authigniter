@@ -3,9 +3,16 @@
 namespace SweetScar\AuthIgniter\Libraries\Authentication;
 
 use SweetScar\AuthIgniter\Entities\User;
+use CodeIgniter\Config\BaseConfig;
 
 interface AuthenticationInterface
 {
+    /**
+     * The constructor of authentication library
+     * 
+     * @param BaseConfig
+     */
+    public function __construct($config);
     /**
      * Attempts to validate the credentials and log a user in.
      *

@@ -4,6 +4,7 @@ namespace SweetScar\AuthIgniter\Supports;
 
 use SweetScar\AuthIgniter\Models\User;
 use SweetScar\AuthIgniter\Models\UserRole;
+use SweetScar\AuthIgniter\Supports\Email;
 use SweetScar\AuthIgniter\Entities\User as UserEntity;
 
 class Account
@@ -47,6 +48,9 @@ class Account
                 $userRoles->addUserRole($user->id, $role);
             } else {
                 $userRoles->addUserRole($user->id, isset($config->defaultUserRole) ? $config->defaultUserRole : 'default');
+            }
+            if (in_array('registration_success', $config->activeEmailNotifications)) {
+                Email::sendRegistrationSuccessNotification($user);
             }
             return $user;
         }

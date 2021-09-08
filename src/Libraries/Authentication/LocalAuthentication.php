@@ -59,7 +59,6 @@ class LocalAuthentication extends BaseAuthentication implements AuthenticationIn
             true
         );
 
-        // triger login event here
         Events::trigger('login', $user);
 
         return true;

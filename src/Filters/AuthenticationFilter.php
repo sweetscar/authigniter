@@ -44,7 +44,7 @@ class AuthenticationFilter implements FilterInterface
 
         if (!$authentication->check()) {
             session()->set('redirect_url', current_url());
-            return redirect('authigniter:login');
+            return redirect('authigniter:login')->with('authigniter_error', lang('AuthIgniter.pleaseLoginFirst'));
         }
 
         return;
@@ -52,6 +52,6 @@ class AuthenticationFilter implements FilterInterface
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Do something here
+        # Not Implemented
     }
 }

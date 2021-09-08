@@ -1,3 +1,6 @@
 <?php
 
-# Not Implemented
+function hello()
+{
+    return "hello";
+}
