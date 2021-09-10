@@ -12,32 +12,32 @@ class AuthorizationFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         $authentication = service('authentication');
-        $autorization = service('authorization');
+        $authorization = service('authorization');
 
         if (!$authentication->check()) {
             session()->set('redirect_url', current_url());
             return redirect('authigniter:login')->with('authigniter_error', lang('AuthIgniter.pleaseLoginFirst'));
         }
 
+        $user = $authentication->user();
+        $groups = $arguments;
+        $userGroups = $authorization->getUserGroups($user);
+
         if (is_null($arguments)) return;
 
-        $roles = $arguments;
-
-        $userRole = $autorization->getUserRole($authentication->user());
-
-        if (is_null($userRole)) {
-            session()->setFlashdata('forbidden', true);
-            session()->setFlashdata('forbidden_url', current_url());
-            throw new RedirectException(route_to('authigniter:forbidden'));
+        if (empty($userGroups)) {
+            throw new RedirectException('', 403);
         }
 
-        if (!in_array($userRole->name, $roles)) {
-            session()->setFlashdata('forbidden', true);
-            session()->setFlashdata('forbidden_url', current_url());
-            throw new RedirectException(route_to('authigniter:forbidden'));
+        if (in_array('*', $groups)) {
+            return;
+        } else {
+            if (array_intersect($groups, $userGroups) == []) {
+                throw new RedirectException('', 403);
+            } else {
+                return;
+            }
         }
-
-        return;
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

@@ -8,12 +8,6 @@ use CodeIgniter\Config\BaseConfig;
 interface AuthenticationInterface
 {
     /**
-     * The constructor of authentication library
-     * 
-     * @param BaseConfig
-     */
-    public function __construct($config);
-    /**
      * Attempts to validate the credentials and log a user in.
      *
      * @param array $credentials
@@ -53,7 +47,7 @@ interface AuthenticationInterface
      *
      * @return User|null
      */
-    public function user(): User|null;
+    public function user(): ?User;
 
     /**
      * Returns the last error message text.

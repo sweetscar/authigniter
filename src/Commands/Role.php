@@ -42,14 +42,11 @@ class Role extends BaseCommand
 
     private function create()
     {
-        $roleName = $this->newRoleName();
-        $roleDescription = $this->newRoleDescription();
-
+        $roleName = CLI::prompt('New role name? ', null, 'required|alpha_dash|is_unique[authigniter_roles.name]');
+        $roleDescription = CLI::prompt('New role description? ', null, 'max_length[255]');
         $role = RoleSupport::create($roleName, $roleDescription);
-
         if (!$role) return CLI::error('Failed to create role item, please try again.');
-
-        return CLI::write('Role ' . $role->name . ' created successfully.', 'green');
+        return CLI::write('Role "' . $role->name . '" created successfully.', 'green');
     }
 
     private function delete()
@@ -73,23 +70,5 @@ class Role extends BaseCommand
         }
 
         return CLI::write('Role deleted successfully.', 'green');
-    }
-
-    private function newRoleName()
-    {
-        $roleName = CLI::prompt('New role name? ', null, 'required|alpha_dash');
-        if (RoleSupport::get('name', $roleName)) {
-            CLI::error('Role name already used, please choose another role name.');
-            $this->newRoleName();
-        } else {
-            return $roleName;
-        }
-    }
-
-    private function newRoleDescription()
-    {
-        $roleDescription = CLI::prompt('New role description? ', null, 'max_length[255]');
-
-        return $roleDescription;
     }
 }

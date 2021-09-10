@@ -12,6 +12,8 @@ class AuthIgniter extends Migration
     public function up()
     {
         $this->createUsersTable();
+        $this->createGroupsTable();
+        $this->createUserGroupsTable();
         $this->createRolesTable();
         $this->createUserRolesTable();
         $this->createEmailVerificationTokensTable();
@@ -25,12 +27,16 @@ class AuthIgniter extends Migration
     public function down()
     {
         if ($this->db->DBDriver != 'SQLite3') {
+            $this->forge->dropForeignKey('authigniter_user_groups', 'user_id');
+            $this->forge->dropForeignKey('authigniter_user_groups', 'role_id');
             $this->forge->dropForeignKey('authigniter_user_roles', 'user_id');
             $this->forge->dropForeignKey('authigniter_user_roles', 'role_id');
         }
 
         $this->forge->dropTable('users', true);
+        $this->forge->dropTable('authigniter_groups', true);
         $this->forge->dropTable('authigniter_roles', true);
+        $this->forge->dropTable('authigniter_user_groups', true);
         $this->forge->dropTable('authigniter_user_roles', true);
         $this->forge->dropTable('authigniter_email_verification_tokens', true);
         $this->forge->dropTable('authigniter_reset_password_tokens', true);
@@ -59,6 +65,47 @@ class AuthIgniter extends Migration
         $this->forge->addUniqueKey('username');
 
         $this->forge->createTable('users', true);
+    }
+
+    /**
+     * Create groups table
+     */
+    protected function createGroupsTable()
+    {
+        $this->forge->addField([
+            'id'          => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'name'        => ['type' => 'varchar', 'constraint' => 255],
+            'description' => ['type' => 'varchar', 'constraint' => 255, 'null' => true],
+            'created_at'  => ['type' => 'datetime'],
+            'updated_at'  => ['type' => 'datetime'],
+        ]);
+
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey('name');
+
+        $this->forge->createTable('authigniter_groups', true);
+    }
+
+    /**
+     * Create user groups table
+     */
+    protected function createUserGroupsTable()
+    {
+        $this->forge->addField([
+            'id'         => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'user_id'    => ['type' => 'varchar', 'constraint' => 255],
+            'group_id'   => ['type' => 'int', 'constraint' => 11],
+            'created_at' => ['type' => 'datetime'],
+            'updated_at' => ['type' => 'datetime'],
+        ]);
+
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addKey('user_id');
+        $this->forge->addKey('group_id');
+        $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
+        $this->forge->addForeignKey('group_id', 'authigniter_groups', 'id', '', 'CASCADE');
+
+        $this->forge->createTable('authigniter_user_groups', true);
     }
 
     /**

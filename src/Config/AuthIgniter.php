@@ -7,6 +7,13 @@ use CodeIgniter\Config\BaseConfig;
 class AuthIgniter extends BaseConfig
 {
     /**
+     * The default group that will be assigned to the new user.
+     * 
+     * @var string
+     */
+    public $defaultUserGroup = 'default';
+    
+    /**
      * The default role that will be assigned to the new user.
      *
      * @var string
@@ -16,10 +23,28 @@ class AuthIgniter extends BaseConfig
     /**
      * Authentication library available for user authentication process.
      * 
-     * @var string
+     * @var array
      */
     public $authenticationLibraries = [
-        'local_authentication' => 'SweetScar\AuthIgniter\Libraries\Authentication\LocalAuthentication',
+        'local' => 'SweetScar\AuthIgniter\Libraries\Authentication\LocalAuthentication',
+    ];
+
+    /**
+     * Authorization library available for user authorization process.
+     * 
+     * @var array
+     */
+    public $authorizationLibraries = [
+        'default' => 'SweetScar\AuthIgniter\Libraries\Authorization\DefaultAuthorization'
+    ];
+
+    /**
+     * User account manager.
+     * 
+     * @var array
+     */
+    public $accountManager = [
+        'default' => 'SweetScar\AuthIgniter\Libraries\Account\DefaultAccountManager'
     ];
 
     /**
@@ -34,7 +59,6 @@ class AuthIgniter extends BaseConfig
         'reset_password' => 'SweetScar\AuthIgniter\Views\reset_password',
         'reset_password_result' => 'SweetScar\AuthIgniter\Views\reset_password_result',
         'verify_email_result' => 'SweetScar\AuthIgniter\Views\verify_email_result',
-        'forbidden' => 'SweetScar\AuthIgniter\Views\forbidden',
         'email:email_verification_link' => 'SweetScar\AuthIgniter\Views\Email\email_verification_link',
         'email:reset_password_link' => 'SweetScar\AuthIgniter\Views\Email\reset_password_link',
         'email:password_changed_notification' => 'SweetScar\AuthIgniter\Views\Email\password_changed_notification',

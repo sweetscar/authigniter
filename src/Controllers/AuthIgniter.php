@@ -2,10 +2,8 @@
 
 namespace SweetScar\AuthIgniter\Controllers;
 
-use CodeIgniter\Router\Exceptions\RedirectException;
 use App\Controllers\BaseController;
 use SweetScar\AuthIgniter\Entities\User;
-use SweetScar\AuthIgniter\Supports\Account;
 use SweetScar\AuthIgniter\Supports\Email;
 use SweetScar\AuthIgniter\Libraries\Token\EmailVerificationToken;
 use SweetScar\AuthIgniter\Libraries\Token\ResetPasswordToken;
@@ -18,6 +16,7 @@ class AuthIgniter extends BaseController
     protected $emailVerificationToken;
     protected $resetPasswordToken;
     protected $authentication;
+    protected $authorization;
     protected $account;
 
     public function __construct()
@@ -30,6 +29,7 @@ class AuthIgniter extends BaseController
         $this->emailVerificationToken = new EmailVerificationToken();
         $this->resetPasswordToken = new ResetPasswordToken();
         $this->authentication = service('authentication');
+        $this->authorization = service('authorization');
         $this->account = service('account');
     }
 
@@ -65,9 +65,7 @@ class AuthIgniter extends BaseController
 
         $login = $this->request->getPost('login');
         $password = $this->request->getPost('password');
-
         $type = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-
         $attempt = $this->authentication->attempt([$type => $login, 'password' => $password]);
 
         if (!$attempt) {
@@ -76,7 +74,7 @@ class AuthIgniter extends BaseController
 
         $redirectURL = session('redirect_url') ?? site_url($this->config->successLoginRedirect);
 
-        unset($_SESSION['redirect_url']);
+        session()->remove('redirect_url');
 
         return redirect()->to($redirectURL)->with('authigniter_info', lang('AuthIgniter.loginSuccess'));
     }
@@ -104,13 +102,11 @@ class AuthIgniter extends BaseController
 
         $minPasswordLength = $this->config->minimumPasswordLength;
         $minPasswordLength = ($minPasswordLength < 6 || $minPasswordLength > 15) ? 6 : $minPasswordLength;
-
         $maxPasswordLength = $this->config->maximumPasswordLength;
         $maxPasswordLength = ($maxPasswordLength < 15 || $maxPasswordLength > 30) ? 30 : $maxPasswordLength;
 
         $minUsernameLength = $this->config->minimumUsernameLength;
         $minUsernameLength = ($minUsernameLength < 3 || $minUsernameLength > 6) ? 3 : $minUsernameLength;
-
         $maxUsernameLength = $this->config->maximumUsernameLength;
         $maxPasswordLength = ($maxUsernameLength < 6 || $maxUsernameLength > 30) ? 30 : $maxUsernameLength;
 
@@ -141,7 +137,6 @@ class AuthIgniter extends BaseController
         }
 
         $user = new User();
-
         $user->setEmail($this->request->getPost('email'));
         $user->setEmail($this->request->getPost('email'));
         if ($this->config->enableUsername) {
@@ -151,11 +146,10 @@ class AuthIgniter extends BaseController
         ($this->config->userActivatedAsDefault) ? $user->activate() : $user->deactivate();
         ($this->config->requireEmailVerification) ? $user->unverifyEmail() : $user->setEmailIsVerified(true);
 
-        $userAccount = Account::create($user, $this->config->defaultUserRole);
-
         $userAccount = $this->account->create($user, true);
 
         if ($userAccount) {
+            $this->authorization->addUserToGroup($userAccount, $this->config->defaultUserGroup);
             if ($this->config->requireEmailVerification) {
                 $token = $this->emailVerificationToken->create($userAccount);
                 if ($token) {
@@ -164,7 +158,7 @@ class AuthIgniter extends BaseController
             }
             return redirect('authigniter:login')->with('authigniter_info', lang('AuthIgniter.registrationSuccess'));
         }
-        return redirect('authigniter:register')->with('authigniter_error', lang('AuthIgniter.registrationFailed'));
+        return redirect('authigniter:register')->with('authigniter_error', $this->account->error());
     }
 
     public function verifyEmail()
@@ -187,7 +181,8 @@ class AuthIgniter extends BaseController
                 if (!$this->emailVerificationToken->getTokenOwner() == $email) {
                     $data['message'] = lang('AuthIgniter.emailVerification.linkInvalid');
                 } else {
-                    $verifyUserEmail = Account::verifyEmail(Account::get('email', $email));
+                    $userAccount = $this->account->get(['email' => $email]);
+                    $verifyUserEmail = $this->account->verifyEmail($userAccount);
                     if (!$verifyUserEmail) {
                         $data['message'] = lang('AuthIgniter.errorHasOccured');
                     } else {
@@ -226,7 +221,7 @@ class AuthIgniter extends BaseController
 
         $email = $this->request->getPost('email');
 
-        $userAccount = Account::get('email', $email);
+        $userAccount = $this->account->get(['email' => $email]);
 
         if (is_null($userAccount)) {
             return redirect('authigniter:forgotPassword')->withInput()->with('authigniter_error', lang('AuthIgniter.resetPassword.accountNotFound'));
@@ -298,10 +293,10 @@ class AuthIgniter extends BaseController
         }
 
         $newPassword = $this->request->getPost('new-password');
-        $user = Account::get('email', $this->resetPasswordToken->getTokenOwner());
+        $user = $this->account->get(['email', $this->resetPasswordToken->getTokenOwner()]);
         $user->setPassword($newPassword);
 
-        if (!Account::update($user)) {
+        if (!$this->account::update($user)) {
             return redirect('authigniter:resetPasswordResult')->with('reset_password_result', ['type' => 'error', 'message' => lang('AuthIgniter.resetPassword.failed')]);
         }
         $this->resetPasswordToken->delete($resetPasswordToken);
@@ -320,16 +315,5 @@ class AuthIgniter extends BaseController
         $data['message'] = session('reset_password_result.message') ?? lang('AuthIgniter.errorHasOccured');
 
         return view($this->config->views['reset_password_result'], $data);
-    }
-
-    public function forbidden()
-    {
-        $forbidden = session()->getFlashData('forbidden');
-
-        if (is_null($forbidden)) throw new RedirectException('Page Not Found', 404);
-
-        $data['config'] = $this->config;
-        $data['forbiddenURL'] = session()->getFlashData('forbidden_url');
-        return view($this->config->views['forbidden'], $data);
     }
 }

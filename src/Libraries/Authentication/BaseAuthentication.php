@@ -2,7 +2,7 @@
 
 namespace SweetScar\AuthIgniter\Libraries\Authentication;
 
-use SweetScar\AuthIgniter\Models\User as UserModel;
+use CodeIgniter\Model;
 use SweetScar\AuthIgniter\Models\Login as LoginModel;
 
 class BaseAuthentication
@@ -12,10 +12,10 @@ class BaseAuthentication
     protected $loginModel;
     protected $userModel;
 
-    public function __construct($config)
+    public function __construct($config, Model $userModel)
     {
         $this->config = $config;
-        $this->userModel = new UserModel();
+        $this->userModel = $userModel;
         $this->loginModel = new LoginModel();
     }
 

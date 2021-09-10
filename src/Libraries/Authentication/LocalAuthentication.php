@@ -110,7 +110,7 @@ class LocalAuthentication extends BaseAuthentication implements AuthenticationIn
         return true;
     }
 
-    public function user(): User|null
+    public function user(): ?User
     {
         if (!$this->check()) return null;
 

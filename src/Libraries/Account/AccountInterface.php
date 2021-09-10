@@ -37,10 +37,14 @@ interface AccountInterface
      * 
      * @return User|null
      */
-    public function get(array|string|int $filter): User|null;
+    public function get(array|string|int $filter): ?User;
 
     /**
      * Updating user account
+     * 
+     * This method is used to updating a spesific user account.
+     * The instance of the user entity is passed to the parameter
+     * as the account to be updated and ready to save.
      * 
      * @param User $user
      * 
@@ -50,6 +54,9 @@ interface AccountInterface
 
     /**
      * Deleting user account
+     * 
+     * This method performs soft delete to the specific user account passed in the first parameter.
+     * If you provide true in the second parameter, this method will permanently delete the account in the database.
      * 
      * @param User $user
      * @param bool $permanent
@@ -61,6 +68,10 @@ interface AccountInterface
     /**
      * Activate user account.
      * 
+     * This method is a shorthand to change the user's active status to activated.
+     * You can also do the same thing by changing the active state of the user
+     * instance and then saving it using the update method.
+     * 
      * @param User
      * 
      * @return bool
@@ -69,6 +80,10 @@ interface AccountInterface
 
     /**
      * Deactivate user account.
+     * 
+     * This method is a shorthand to change the user's active status to deactivated.
+     * You can also do the same thing by changing the active state of the user
+     * instance and then saving it using the update method.
      * 
      * @param User
      * 
@@ -79,6 +94,10 @@ interface AccountInterface
     /**
      * Verify user email address.
      * 
+     * This method is a shorthand to change the user's email to verified.
+     * You can also do the same thing by changing the is_email_verified state of the user
+     * instance and then saving it using the update method.
+     * 
      * @param User $user
      * 
      * @return bool
@@ -87,6 +106,10 @@ interface AccountInterface
 
     /**
      * Unverify user email address.
+     * 
+     * This method is a shorthand to change the user's email to unverified.
+     * You can also do the same thing by changing the is_email_verified state of the user
+     * instance and then saving it using the update method.
      * 
      * @param User $user
      * 
