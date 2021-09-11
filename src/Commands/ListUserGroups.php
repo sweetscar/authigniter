@@ -5,15 +5,15 @@ namespace SweetScar\AuthIgniter\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
-class DeactivateUser extends BaseCommand
+class ListUserGroups extends BaseCommand
 {
     protected $group = 'AuthIgniter';
-    protected $name = 'ai:deactivate_user';
-    protected $usage = 'ai:deactivate_user [identifier]';
+    protected $name = 'ai:list_user_groups';
+    protected $usage = 'ai:list_user_groups [identifier]';
     protected $arguments = [
         'identifier' => "Email or username of user account.",
     ];
-    protected $description = 'Deactivating an user account.';
+    protected $description = 'Show group list of user.';
 
     public function run(array $params)
     {
@@ -33,11 +33,14 @@ class DeactivateUser extends BaseCommand
             return;
         }
 
-        if (!$account->deactivate($user)) {
-            CLI::error($account->error());
-            return;
+        $userGroups = service('authorization')->getUserGroups($user);
+
+        $body = [];
+
+        foreach ($userGroups as $index => $group) {
+            array_push($body, [++$index, $group]);
         }
 
-        CLI::write('User ' . $identifier . ' successfully deactivated.', 'green');
+        CLI::table($body, ['No', 'Group name']);
     }
 }

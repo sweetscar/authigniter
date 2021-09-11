@@ -7,6 +7,24 @@ use SweetScar\AuthIgniter\Entities\User;
 interface AccountInterface
 {
     /**
+     * Getting all user account from database
+     * 
+     * This method is used to get all registered user accounts.
+     * You can pass an array into its parameters as an filter to get the data.
+     * For example, as shown below:
+     * 
+     * ['active' => true]
+     * 
+     * Using the filter above will make this method only get active user accounts.
+     * 
+     * The key of the filter array must be the same as the column name in the user table
+     * 
+     * @param array $filter
+     * @return array
+     */
+    public function all(array $filter = null): array;
+
+    /**
      * Creating New User Account.
      * 
      * By default we create a new user account using this method. 

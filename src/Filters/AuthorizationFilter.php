@@ -9,6 +9,9 @@ use CodeIgniter\Router\Exceptions\RedirectException;
 
 class AuthorizationFilter implements FilterInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function before(RequestInterface $request, $arguments = null)
     {
         $authentication = service('authentication');
@@ -40,6 +43,9 @@ class AuthorizationFilter implements FilterInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
         # Not Implemented

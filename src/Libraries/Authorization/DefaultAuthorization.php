@@ -8,6 +8,9 @@ use SweetScar\AuthIgniter\Libraries\Authorization\BaseAuthorization;
 
 class DefaultAuthorization extends BaseAuthorization implements AuthorizationInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function group(string $whereField, string|int $fieldValue): array|object|null
     {
         $group = $this->groupModel->where([$whereField => $fieldValue])->first();
@@ -19,11 +22,17 @@ class DefaultAuthorization extends BaseAuthorization implements AuthorizationInt
         return $group;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function groups(): array
     {
         return $this->groupModel->findAll();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function createGroup(string $name, ?string $description = null): bool
     {
         if (!$this->groupModel->insert(['name' => $name, 'description' => $description], false)) {
@@ -33,24 +42,41 @@ class DefaultAuthorization extends BaseAuthorization implements AuthorizationInt
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function updateGroup(int|string $id, array $data): bool
     {
         if (!$this->groupModel->update($id, $data)) {
-            $this->error = lang('AuthIgniter.failedToUpdateGroup');
+            // $this->error = lang('AuthIgniter.failedToUpdateGroup');
+            $this->error = $this->groupModel->errors();
             return false;
         }
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function deleteGroup(int|string|array $id): bool
     {
         if (!$this->groupModel->delete($id)) {
             $this->error = lang('AuthIgniter.failedToDeleteGroup');
             return false;
         }
+        if (is_array($id)) {
+            foreach ($id as $groupId) {
+                $this->userGroupModel->where('group_id', $groupId)->delete();
+            }
+        } else {
+            $this->userGroupModel->delete($id);
+        }
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function inGroup(User $user, string $groupName): bool
     {
         if (is_null($this->group('name', $groupName))) {
@@ -71,6 +97,9 @@ class DefaultAuthorization extends BaseAuthorization implements AuthorizationInt
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function addUserToGroup(User $user, string $groupName): bool
     {
         $group = $this->groupModel->where('name', $groupName)->first();
@@ -97,6 +126,9 @@ class DefaultAuthorization extends BaseAuthorization implements AuthorizationInt
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function removeUserFromGroup(User $user, string $groupName): bool
     {
         $group = $this->group('name', $groupName);
@@ -118,6 +150,9 @@ class DefaultAuthorization extends BaseAuthorization implements AuthorizationInt
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getUserGroups(User $user): array
     {
         $userGroups = $this->userGroupModel->where(['user_id' => $user->id])->findAll();
@@ -128,86 +163,5 @@ class DefaultAuthorization extends BaseAuthorization implements AuthorizationInt
         }
 
         return $groups;
-    }
-
-    ##############################################################################################
-    public function listRole(): array
-    {
-        return $this->roleModel->findAll();
-    }
-
-    public function createRole(string $name, ?string $description = null): bool
-    {
-        return $this->roleModel->insert(['name' => $name, 'description' => $description]);
-    }
-
-    public function hasRole(User $user, string $roleName): bool
-    {
-        $userRole = $this->userRoleModel->where('user_id', $user->id)->first();
-
-        if (is_null($userRole)) {
-            $this->error = lang('AuthIgniter.doesNotHaveAnyRoles');
-            return false;
-        }
-
-        $role = $this->roleModel->where('name', $roleName)->first();
-
-        if (is_null($role)) {
-            $this->error = lang('AuthIgniter.noSpesificRole', [$roleName]);
-            return false;
-        }
-
-        if ($userRole->role_id != $role->id) {
-            $this->error = lang('AuthIgniter.doesNotHaveRole', [$roleName]);
-            return false;
-        }
-        return true;
-    }
-
-    public function addUserRole(User $user, string $roleName): bool
-    {
-        $role = $this->roleModel->where('name', $roleName)->first();
-        if (is_null($role)) {
-            $this->roleModel->insert([
-                'name' => $roleName,
-                'description' => null,
-            ], false);
-            $this->addUserRole($user, $roleName);
-        }
-        if ($this->userRoleModel->where('user_id', $user->id)->first()) {
-            $this->error = lang('AuthIgniter.cannotHaveMultipleRole');
-            return false;
-        }
-        if (!$this->userRoleModel->insert([
-            'user_id' => $user->id,
-            'role_id' => $role->id
-        ], false)) {
-            $this->error = lang('AuthIgniter.failedToAddUserRole');
-            return false;
-        }
-        return true;
-    }
-
-    public function removeUserRole(User $user): bool
-    {
-        return $this->userRoleModel->where('user_id', $user->id)->delete();
-    }
-
-    public function getUserRole(User $user): object|null
-    {
-        $userRole = $this->userRoleModel->where('user_id', $user->id)->first();
-
-        if (is_null($userRole)) {
-            return null;
-        }
-
-        $role = $this->roleModel->find($userRole->role_id);
-
-        return $role;
-    }
-
-    public function roles(): array
-    {
-        return $this->roleModel->findAll();
     }
 }

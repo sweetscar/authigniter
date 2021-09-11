@@ -19,6 +19,9 @@ class AuthIgniter extends BaseController
     protected $authorization;
     protected $account;
 
+    /**
+     * Construction of all our needs here.
+     */
     public function __construct()
     {
         session();
@@ -33,8 +36,12 @@ class AuthIgniter extends BaseController
         $this->account = service('account');
     }
 
+    /**
+     * Show the page for logged in users.
+     */
     public function login()
     {
+        // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $data['config'] = $this->config;
@@ -42,8 +49,12 @@ class AuthIgniter extends BaseController
         return view($this->config->views['login'], $data);
     }
 
+    /**
+     * Attempting to log the user into the application.
+     */
     public function attemptLogin()
     {
+        // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $rules = [
@@ -66,6 +77,8 @@ class AuthIgniter extends BaseController
         $login = $this->request->getPost('login');
         $password = $this->request->getPost('password');
         $type = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        // try to log the user into application
         $attempt = $this->authentication->attempt([$type => $login, 'password' => $password]);
 
         if (!$attempt) {
@@ -79,16 +92,24 @@ class AuthIgniter extends BaseController
         return redirect()->to($redirectURL)->with('authigniter_info', lang('AuthIgniter.loginSuccess'));
     }
 
+    /**
+     * User logout from the app
+     */
     public function logout()
     {
+        // Destroy the user session
         if ($this->authentication->destroy()) {
-            return redirect('authigniter:login')->with('authigniter_info', lang('AuthIgniter.logoutSuccess'));
+            return redirect()->to($this->config->successLogoutRedirect)->with('authigniter_info', lang('AuthIgniter.logoutSuccess'));
         }
         return redirect()->back();
     }
 
+    /**
+     * Show page for new user registration.
+     */
     public function register()
     {
+        // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $data['config'] = $this->config;
@@ -96,8 +117,12 @@ class AuthIgniter extends BaseController
         return view($this->config->views['register'], $data);
     }
 
+    /**
+     * Trying to create a new user account.
+     */
     public function attemptRegister()
     {
+        // if user has logged in, redirect to base url.
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $minPasswordLength = $this->config->minimumPasswordLength;
@@ -136,6 +161,7 @@ class AuthIgniter extends BaseController
             return redirect('authigniter:register')->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        // create new user entity
         $user = new User();
         $user->setEmail($this->request->getPost('email'));
         $user->setEmail($this->request->getPost('email'));
@@ -146,10 +172,12 @@ class AuthIgniter extends BaseController
         ($this->config->userActivatedAsDefault) ? $user->activate() : $user->deactivate();
         ($this->config->requireEmailVerification) ? $user->unverifyEmail() : $user->setEmailIsVerified(true);
 
+        // create account from user entity
         $userAccount = $this->account->create($user, true);
 
         if ($userAccount) {
             $this->authorization->addUserToGroup($userAccount, $this->config->defaultUserGroup);
+            // if user is required to verify email address, create token and send it to user email.
             if ($this->config->requireEmailVerification) {
                 $token = $this->emailVerificationToken->create($userAccount);
                 if ($token) {
@@ -161,6 +189,9 @@ class AuthIgniter extends BaseController
         return redirect('authigniter:register')->with('authigniter_error', $this->account->error());
     }
 
+    /**
+     * Verify user email address
+     */
     public function verifyEmail()
     {
         $email = $this->request->getGet('email');
@@ -196,8 +227,12 @@ class AuthIgniter extends BaseController
         return view($this->config->views['verify_email_result'], $data);
     }
 
+    /**
+     * Show forgot password form.
+     */
     public function forgotPassword()
     {
+        // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $data['config'] = $this->config;
@@ -205,8 +240,12 @@ class AuthIgniter extends BaseController
         return view($this->config->views['forgot_password'], $data);
     }
 
+    /**
+     * Try to 
+     */
     public function attemptForgotPassword()
     {
+        // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $rules = [
@@ -227,6 +266,7 @@ class AuthIgniter extends BaseController
             return redirect('authigniter:forgotPassword')->withInput()->with('authigniter_error', lang('AuthIgniter.resetPassword.accountNotFound'));
         }
 
+        // create reset password token
         $token = $this->resetPasswordToken->create(
             $email,
             $this->request->getIPAddress(),
@@ -246,8 +286,12 @@ class AuthIgniter extends BaseController
         return redirect('authigniter:forgotPassword')->with('authigniter_info', lang('AuthIgniter.resetPassword.successToSendLink'));
     }
 
+    /**
+     * Show reset password form
+     */
     public function resetPassword()
     {
+        // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $token = $this->request->getGet('token');
@@ -258,6 +302,7 @@ class AuthIgniter extends BaseController
             return redirect('authigniter:resetPasswordResult')->with('reset_password_result', ['type' => 'error', 'message' => lang('AuthIgniter.resetPassword.linkInvalid')]);
         }
 
+        // verify the forgot password token
         $verifyToken = $this->resetPasswordToken->verify($token);
 
         if (!$verifyToken) {
@@ -267,8 +312,12 @@ class AuthIgniter extends BaseController
         return view($this->config->views['reset_password'], $data);
     }
 
+    /**
+     * Try to reset user password
+     */
     public function attemptResetPassword($resetPasswordToken)
     {
+        // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $rules = [
@@ -286,20 +335,23 @@ class AuthIgniter extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        // verify the reset password token
         $verifyToken = $this->resetPasswordToken->verify($resetPasswordToken);
 
         if (!$verifyToken) {
             return redirect('authigniter:resetPasswordResult')->with('reset_password_result', ['type' => 'error', 'message' => $this->resetPasswordToken->getErrorMessage()]);
         }
 
+        // updating user password
         $newPassword = $this->request->getPost('new-password');
         $user = $this->account->get(['email', $this->resetPasswordToken->getTokenOwner()]);
         $user->setPassword($newPassword);
 
-        if (!$this->account::update($user)) {
+        if (!$this->account->update($user)) {
             return redirect('authigniter:resetPasswordResult')->with('reset_password_result', ['type' => 'error', 'message' => lang('AuthIgniter.resetPassword.failed')]);
         }
         $this->resetPasswordToken->delete($resetPasswordToken);
+        // send email notification to user if password changed notification has enabled.
         if (in_array('password_changed', $this->config->activeEmailNotifications)) {
             Email::sendPasswordChangedNotification($user);
         }
@@ -308,9 +360,12 @@ class AuthIgniter extends BaseController
 
     public function resetPasswordResult()
     {
+        // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
 
         $data['config'] = $this->config;
+        
+        // grab result type and message from flash data
         $data['type'] = session('reset_password_result.type') ?? 'error';
         $data['message'] = session('reset_password_result.message') ?? lang('AuthIgniter.errorHasOccured');
 

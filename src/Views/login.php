@@ -1,5 +1,9 @@
 <?= $this->extend($config->viewLayout) ?>
 
+<?= $this->section('title') ?>
+<?= lang('AuthIgniter.loginPageTitle') ?>
+<?= $this->endSection() ?>
+
 <?= $this->section('main') ?>
 <div class="py-5">
     <div class="row">

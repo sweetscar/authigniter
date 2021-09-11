@@ -8,8 +8,8 @@ use CodeIgniter\CLI\CLI;
 class AddUserToGroup extends BaseCommand
 {
     protected $group = 'AuthIgniter';
-    protected $name = 'ai:user:add_to_group';
-    protected $usage = 'ai:user:add_to_group [identifier] [group]';
+    protected $name = 'ai:add_user_to_group';
+    protected $usage = 'ai:add_user_to_group [identifier] [group]';
     protected $arguments = [
         'identifier' => "Email or username of user account.",
         'group' => "Group name where user to be added.",

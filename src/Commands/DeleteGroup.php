@@ -8,8 +8,8 @@ use CodeIgniter\CLI\CLI;
 class DeleteGroup extends BaseCommand
 {
     protected $group = 'AuthIgniter';
-    protected $name = 'ai:group:delete';
-    protected $usage = 'ai:group:create [name]';
+    protected $name = 'ai:delete_group';
+    protected $usage = 'ai:delete_group [name]';
     protected $arguments = [
         'name' => "The name of the group to delete",
     ];

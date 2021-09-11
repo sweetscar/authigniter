@@ -15,6 +15,13 @@ class EmailVerificationToken extends Token
         $this->model = new Model();
     }
 
+    /**
+     * Create email verification token
+     * 
+     * @param User $user
+     * 
+     * @return null|string
+     */
     public function create(User $user): null|string
     {
         $token = $this->createToken(32);
@@ -29,6 +36,13 @@ class EmailVerificationToken extends Token
         return null;
     }
 
+    /**
+     * Verify email verification token
+     * 
+     * @param string $token
+     * 
+     * @return bool
+     */
     public function verify(string $token): bool
     {
         $verificationToken = $this->model->where('token', $token)->first();
@@ -49,6 +63,13 @@ class EmailVerificationToken extends Token
         return true;
     }
 
+    /**
+     * Delete email verification token
+     * 
+     * @param string $token
+     * 
+     * @return bool
+     */
     public function delete(string $token): bool
     {
         $resetToken = $this->model->where('token', $token)->first();

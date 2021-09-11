@@ -8,8 +8,8 @@ use CodeIgniter\CLI\CLI;
 class CreateGroup extends BaseCommand
 {
     protected $group = 'AuthIgniter';
-    protected $name = 'ai:group:create';
-    protected $usage = 'ai:group:create [name] [description]';
+    protected $name = 'ai:create_group';
+    protected $usage = 'ai:create_group [name] [description]';
     protected $arguments = [
         'name' => "The name of the new group to create",
         'description' => "Optional description 'in quotes'",
@@ -33,7 +33,7 @@ class CreateGroup extends BaseCommand
         if ($authorization->createGroup($name, $description)) {
             CLI::write('Group "' . $name . '" created successfully.', 'green');
             CLI::write('');
-            $this->call('ai:group:list');
+            $this->call('ai:list_groups');
         } else {
             CLI::error($authorization->error(), 'red');
         }

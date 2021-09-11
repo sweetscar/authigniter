@@ -7,6 +7,14 @@ use SweetScar\AuthIgniter\Entities\User;
 
 class Email
 {
+    /**
+     * Send email verification link to user
+     * 
+     * @param string $toEmail
+     * @param string $token
+     * 
+     * @return bool
+     */
     public static function sendEmailVerificationLink(string $toEmail, string $token): bool
     {
         $config = config('AuthIgniter');
@@ -25,6 +33,14 @@ class Email
         return $sender->send();
     }
 
+    /**
+     * Send reset password link to user
+     * 
+     * @param string $toEmail
+     * @param string $token
+     * 
+     * @return bool
+     */
     public static function sendResetPasswordLink(string $toEmail, string $token): bool
     {
         $config = config('AuthIgniter');
@@ -43,12 +59,19 @@ class Email
         return $sender->send();
     }
 
+    /**
+     * Send password changed notification to user
+     * 
+     * @param User $user
+     * 
+     * @return bool
+     */
     public static function sendPasswordChangedNotification(User $user): bool
     {
         $config = config('AuthIgniter');
         $content = view($config->views['email:password_changed_notification'], ['user' => $user]);
 
-        $sender = new Sender();
+        $sender = new Sender('netcore');
 
         $sender->setFromEmail('r24072020@pepisandbox.com');
         $sender->setFromName('SweetScar\AuthIgniter');
@@ -60,6 +83,13 @@ class Email
         return $sender->send();
     }
 
+    /**
+     * Send registration success notification to user
+     * 
+     * @param User $user
+     * 
+     * @return bool
+     */
     public static function sendRegistrationSuccessNotification(User $user): bool
     {
         $config = config('AuthIgniter');

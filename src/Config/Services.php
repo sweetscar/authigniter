@@ -7,11 +7,18 @@ use CodeIgniter\Config\BaseService;
 use SweetScar\AuthIgniter\Models\User;
 use SweetScar\AuthIgniter\Models\Group;
 use SweetScar\AuthIgniter\Models\UserGroup;
-use SweetScar\AuthIgniter\Models\Role;
-use SweetScar\AuthIgniter\Models\UserRole;
 
 class Services extends BaseService
 {
+    /**
+     * Authentication Service
+     * 
+     * Provides services to manage all logic related to authentication.
+     * 
+     * @param string $library
+     * @param Model $userModel
+     * @param bool $getShared
+     */
     public static function authentication(string $library = 'local', Model $userModel = null, bool $getShared = true)
     {
 
@@ -25,23 +32,41 @@ class Services extends BaseService
         return $instance;
     }
 
-    public static function authorization(string $library = 'default', Model $userModel = null, Model $groupModel = null, Model $userGroupModel = null, Model $roleModel = null, Model $userRoleModel = null, bool $getShared = true)
+    /**
+     * Authorization Service
+     * 
+     * Provides services to manage all logic related to authorization.
+     * 
+     * @param string $library
+     * @param Model $userModel
+     * @param Model $groupModel
+     * @param Model $userGroupModel
+     * @param bool $getShared
+     */
+    public static function authorization(string $library = 'default', Model $userModel = null, Model $groupModel = null, Model $userGroupModel = null, bool $getShared = true)
     {
-        if ($getShared) return static::getSharedInstance('authorization', $library, $userModel, $groupModel, $userGroupModel, $roleModel, $userRoleModel);
+        if ($getShared) return static::getSharedInstance('authorization', $library, $userModel, $groupModel, $userGroupModel);
 
         $config = config('AuthIgniter');
         $userModel = $userModel ?? model(User::class);
         $groupModel = $groupModel ?? model(Group::class);
         $userGroupModel = $userGroupModel ?? model(UserGroup::class);
-        $roleModel = $roleModel ?? model(Role::class);
-        $userRoleModel = $userRoleModel ?? model(UserRole::class);
 
         $class = $config->authorizationLibraries[$library];
-        $instance = new $class($config, $userModel, $groupModel, $userGroupModel, $roleModel, $userRoleModel);
+        $instance = new $class($config, $userModel, $groupModel, $userGroupModel);
 
         return $instance;
     }
 
+    /**
+     * Account Service
+     * 
+     * Provides services to manage all logic related to user account.
+     * 
+     * @param string $library
+     * @param Model $userModel
+     * @param bool $getShared
+     */
     public static function account(string $library = 'default', Model $userModel = null, bool $getShared = true)
     {
         if ($getShared) return static::getSharedInstance('account', $library, $userModel);

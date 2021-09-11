@@ -2,11 +2,15 @@
 
 namespace SweetScar\AuthIgniter\Libraries\Email;
 
+use Error;
 use SweetScar\AuthIgniter\Libraries\Email\EmailInterface;
 use SweetScar\AuthIgniter\Libraries\Email\BaseEmail;
 
 class NetcoreEmail extends BaseEmail implements EmailInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function send(
         string $fromEmail,
         string $fromName,
@@ -15,6 +19,13 @@ class NetcoreEmail extends BaseEmail implements EmailInterface
         string $subject,
         string $content
     ): bool {
+
+        $netcoreURL = $this->emailConfig->netcore['url'];
+        $netcoreAPIKEY = $this->emailConfig->netcore['api_key'];
+
+        if (is_null($netcoreURL) || is_null($netcoreAPIKEY)) {
+            throw new Error("Netcore email configuration error");
+        }
 
         $curl = curl_init();
 
@@ -43,7 +54,7 @@ class NetcoreEmail extends BaseEmail implements EmailInterface
         );
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://emailapi.netcorecloud.net/v5/mail/send",
+            CURLOPT_URL => $netcoreURL,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -52,7 +63,7 @@ class NetcoreEmail extends BaseEmail implements EmailInterface
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => json_encode($postFields),
             CURLOPT_HTTPHEADER => array(
-                "api_key:41a51d14f9afe11a4d6cb505095bd15a",
+                "api_key:" . $netcoreAPIKEY,
                 "content-type: application/json"
             ),
         ));

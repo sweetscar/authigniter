@@ -12,6 +12,9 @@ use SweetScar\AuthIgniter\Libraries\Authentication\BaseAuthentication;
 
 class LocalAuthentication extends BaseAuthentication implements AuthenticationInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function attempt(array $credentials): bool
     {
         $user = $this->validate($credentials, true);
@@ -59,11 +62,14 @@ class LocalAuthentication extends BaseAuthentication implements AuthenticationIn
             true
         );
 
-        Events::trigger('login', $user);
+        Events::trigger('user_logged_in', $user);
 
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function check(): bool
     {
         if (session('authigniter_logged_in')) {
@@ -73,6 +79,9 @@ class LocalAuthentication extends BaseAuthentication implements AuthenticationIn
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function validate(array $credentials, bool $returnUser = false): User|bool
     {
         if (empty($credentials['password'])) throw new Exception(lang('AuthIgniter.exception.validateWithoutPassword'), 500);
@@ -97,19 +106,25 @@ class LocalAuthentication extends BaseAuthentication implements AuthenticationIn
         return $returnUser ? $user : true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function destroy(): bool
     {
         if (!$this->check()) return false;
 
         $user = $this->user();
-        
-        Events::trigger('logout', $user);
 
         session()->remove('authigniter_logged_in');
+
+        Events::trigger('user_logged_out', $user);
 
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function user(): ?User
     {
         if (!$this->check()) return null;

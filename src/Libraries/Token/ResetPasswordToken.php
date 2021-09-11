@@ -14,6 +14,15 @@ class ResetPasswordToken extends Token
         $this->model = new Model();
     }
 
+    /**
+     * Create reset password token
+     * 
+     * @param string $email
+     * @param string $ipAddress
+     * @param string $userAgent
+     * 
+     * @return bool|string
+     */
     public function create(string $email, string $ipAddress, string $userAgent): bool|string
     {
         $token = $this->createToken(32);
@@ -30,6 +39,13 @@ class ResetPasswordToken extends Token
         return false;
     }
 
+    /**
+     * Verify reset password token
+     * 
+     * @param string $token
+     * 
+     * @return bool
+     */
     public function verify(string $token): bool
     {
         $resetToken = $this->model->where('token', $token)->first();
@@ -49,6 +65,13 @@ class ResetPasswordToken extends Token
         return true;
     }
 
+    /**
+     * Delete reset password token
+     * 
+     * @param string $token
+     * 
+     * @return bool
+     */
     public function delete(string $token): bool
     {
         $resetToken = $this->model->where('token', $token)->first();

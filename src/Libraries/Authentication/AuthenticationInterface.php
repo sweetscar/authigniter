@@ -3,7 +3,6 @@
 namespace SweetScar\AuthIgniter\Libraries\Authentication;
 
 use SweetScar\AuthIgniter\Entities\User;
-use CodeIgniter\Config\BaseConfig;
 
 interface AuthenticationInterface
 {

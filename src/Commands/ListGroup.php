@@ -8,8 +8,8 @@ use CodeIgniter\CLI\CLI;
 class ListGroup extends BaseCommand
 {
     protected $group = 'AuthIgniter';
-    protected $name = 'ai:group:list';
-    protected $usage = 'ai:group:list';
+    protected $name = 'ai:list_groups';
+    protected $usage = 'ai:list_groups';
     protected $description = 'Show all group.';
 
     public function run(array $params)
@@ -19,11 +19,11 @@ class ListGroup extends BaseCommand
         $groups = $authorization->groups();
 
         $body = [];
-        
+
         foreach ($groups as $group) {
-            array_push($body, [$group->id, $group->name, $group->description]);
+            array_push($body, [$group->id, $group->name, $group->description, $group->created_at, $group->updated_at]);
         }
-        $head = ['id', 'name', 'description'];
+        $head = ['id', 'name', 'description', 'created_at', 'updated_at'];
         CLI::table($body, $head);
     }
 }

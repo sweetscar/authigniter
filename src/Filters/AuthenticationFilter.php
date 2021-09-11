@@ -9,6 +9,9 @@ use CodeIgniter\Filters\FilterInterface;
 
 class AuthenticationFilter implements FilterInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function before(RequestInterface $request, $arguments = null)
     {
         $current = (string)current_url(true)
@@ -50,6 +53,9 @@ class AuthenticationFilter implements FilterInterface
         return;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
         # Not Implemented

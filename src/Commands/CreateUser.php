@@ -9,8 +9,8 @@ use SweetScar\AuthIgniter\Entities\User;
 class CreateUser extends BaseCommand
 {
     protected $group = 'AuthIgniter';
-    protected $name = 'ai:user:create';
-    protected $usage = 'ai:user:create';
+    protected $name = 'ai:create_user';
+    protected $usage = 'ai:create_user';
     protected $description = 'Create new user.';
 
     public function run(array $params)

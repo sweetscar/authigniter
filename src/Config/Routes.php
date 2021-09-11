@@ -20,6 +20,4 @@ $routes->group('', ['namespace' => 'SweetScar\AuthIgniter\Controllers'], functio
     if (config('AuthIgniter')->requireEmailVerification) {
         $routes->get('verify-email', 'AuthIgniter::verifyEmail', ['as' => 'authigniter:verifyEmail']);
     }
-
-    $routes->get('forbidden', 'AuthIgniter::forbidden', ['as' => 'authigniter:forbidden']);
 });

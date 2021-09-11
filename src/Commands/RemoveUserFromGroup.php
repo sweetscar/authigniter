@@ -8,8 +8,8 @@ use CodeIgniter\CLI\CLI;
 class RemoveUserFromGroup extends BaseCommand
 {
     protected $group = 'AuthIgniter';
-    protected $name = 'ai:user:remove_from_group';
-    protected $usage = 'ai:user:remove_from_group [identifier] [group]';
+    protected $name = 'ai:remove_user_from_group';
+    protected $usage = 'ai:remove_user_from_group [identifier] [group]';
     protected $arguments = [
         'identifier' => "Email or username of user account.",
         'group' => "Group name where user to be removed.",

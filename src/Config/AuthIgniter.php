@@ -12,13 +12,6 @@ class AuthIgniter extends BaseConfig
      * @var string
      */
     public $defaultUserGroup = 'default';
-    
-    /**
-     * The default role that will be assigned to the new user.
-     *
-     * @var string
-     */
-    public $defaultUserRole = 'default';
 
     /**
      * Authentication library available for user authentication process.
@@ -78,6 +71,7 @@ class AuthIgniter extends BaseConfig
      * @var array
      */
     public $emailLibraries = [
+        'default' => 'SweetScar\AuthIgniter\Libraries\Email\DefaultEmail',
         'netcore' => 'SweetScar\AuthIgniter\Libraries\Email\NetcoreEmail'
     ];
 
@@ -88,7 +82,7 @@ class AuthIgniter extends BaseConfig
      * 
      * @var string
      */
-    public $defaultEmailLibrary = 'netcore';
+    public $defaultEmailLibrary = 'default';
 
     /**
      * Activated email notification list.
@@ -113,7 +107,7 @@ class AuthIgniter extends BaseConfig
      * 
      * @var bool
      */
-    public $enableForgotPassword = false;
+    public $enableForgotPassword = true;
 
     /**
      * Allow remembering
@@ -190,6 +184,15 @@ class AuthIgniter extends BaseConfig
      * @var string
      */
     public $successLoginRedirect = '/';
+
+    /**
+     * Success logout redirection.
+     * 
+     * The route to redirect when the user is successfully logged out.
+     * 
+     * @var string
+     */
+    public $successLogoutRedirect = '/login';
 
     /**
      * Encryption algorithm to use.

@@ -8,8 +8,8 @@ use CodeIgniter\CLI\CLI;
 class UpdateGroup extends BaseCommand
 {
     protected $group = 'AuthIgniter';
-    protected $name = 'ai:group:update';
-    protected $usage = 'ai:group:update [name]';
+    protected $name = 'ai:update_group';
+    protected $usage = 'ai:update_group [name]';
     protected $arguments = [
         'name' => "The name of the group to update",
     ];
@@ -31,7 +31,7 @@ class UpdateGroup extends BaseCommand
             return;
         }
 
-        $newName = CLI::prompt('New group name', $group->name, 'required|alpha_dash|is_unique[authigniter_groups.name,name,' . $group->name . ']');
+        $newName = CLI::prompt('Group name', $group->name, 'required|alpha_dash|is_unique[authigniter_groups.name,name,' . $group->name . ']');
 
         $newDescription = CLI::prompt('Description', $group->description);
 
@@ -42,7 +42,7 @@ class UpdateGroup extends BaseCommand
 
         if ($authorization->updateGroup($group->id, $newGroupData)) {
             CLI::write('Group "' . $name . '" updated successfully.', 'green');
-            $this->call('ai:group:list');
+            $this->call('ai:list_groups');
         } else {
             CLI::error($authorization->error(), 'red');
         }

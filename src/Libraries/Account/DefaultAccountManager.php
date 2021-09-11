@@ -2,6 +2,7 @@
 
 namespace SweetScar\AuthIgniter\Libraries\Account;
 
+use CodeIgniter\Events\Events;
 use Error;
 use SweetScar\AuthIgniter\Entities\User;
 use SweetScar\AuthIgniter\Supports\Email;
@@ -13,12 +14,25 @@ class DefaultAccountManager extends BaseAccountManager implements AccountInterfa
     /**
      * {@inheritdoc}
      */
+    public function all(?array $filter = null): array
+    {
+        if (is_null($filter)) {
+            return $this->userModel->findAll();
+        }
+
+        return $this->userModel->where($filter)->findAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function create(User $user, bool $returnUser = false): User|bool
     {
         if ($this->userModel->insert($user, false)) {
             if (in_array('registration_success', $this->config->activeEmailNotifications)) {
                 Email::sendRegistrationSuccessNotification($user);
             }
+            Events::trigger('user_created', $user);
             return $returnUser ? $user : true;
         }
         $this->error = lang('AuthIgniter.registrationFailed');
@@ -62,6 +76,7 @@ class DefaultAccountManager extends BaseAccountManager implements AccountInterfa
             $this->error = lang('AuthIgniter.failedToUpdateAccount');
             return false;
         }
+        Events::trigger('user_updated', $user);
         return true;
     }
 
@@ -70,9 +85,21 @@ class DefaultAccountManager extends BaseAccountManager implements AccountInterfa
      */
     public function delete(User $user, bool $permanent): bool
     {
+        $authorization = service('authorization');
+
+        $userGroups = $authorization->getUserGroups($user);
+
         if (!$this->userModel->delete($user->id, $permanent)) {
             $this->error = lang('AuthIgniter.failedToDeleteAccount');
             return false;
+        }
+        if ($permanent) {
+            Events::trigger('user_deleted_permanently', $user);
+            foreach ($userGroups as $group) {
+                $authorization->removeUserFromGroup($user, $group);
+            }
+        } else {
+            Events::trigger('user_deleted', $user);
         }
         return true;
     }
@@ -93,6 +120,7 @@ class DefaultAccountManager extends BaseAccountManager implements AccountInterfa
             $this->error = lang('AuthIgniter.failedToActivateAccount');
             return false;
         }
+        Events::trigger('user_activated', $user);
         return true;
     }
 
@@ -106,12 +134,13 @@ class DefaultAccountManager extends BaseAccountManager implements AccountInterfa
             return false;
         }
 
-        $user->activate();
+        $user->deactivate();
 
         if (!$this->userModel->save($user)) {
             $this->error = lang('AuthIgniter.failedToDeactivateAccount');
             return false;
         }
+        Events::trigger('user_deactivated', $user);
         return true;
     }
 
