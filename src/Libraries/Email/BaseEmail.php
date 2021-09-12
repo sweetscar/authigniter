@@ -19,9 +19,9 @@ class BaseEmail
     /**
      * Constructor
      */
-    public function __construct($emailConfig)
+    public function __construct($emailConfig = null)
     {
-        $this->emailConfig = $emailConfig;
+        $this->emailConfig = $emailConfig ?? config('AuthIgniterEmail');
     }
 
     /**

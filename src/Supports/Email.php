@@ -71,7 +71,7 @@ class Email
         $config = config('AuthIgniter');
         $content = view($config->views['email:password_changed_notification'], ['user' => $user]);
 
-        $sender = new Sender('netcore');
+        $sender = new Sender();
 
         $sender->setFromEmail('r24072020@pepisandbox.com');
         $sender->setFromName('SweetScar\AuthIgniter');

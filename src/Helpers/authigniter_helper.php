@@ -27,7 +27,7 @@ if (!function_exists('user')) {
 }
 
 /**
- * Check if the user is a member of a grub
+ * Check if the current authenticated user is a member of a group
  * 
  * @param string $groupName
  */

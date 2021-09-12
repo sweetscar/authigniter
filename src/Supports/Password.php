@@ -5,7 +5,7 @@ namespace SweetScar\AuthIgniter\Supports;
 class Password
 {
     /**
-     * Has the password
+     * Hash the password
      * 
      * @param string $password
      * 

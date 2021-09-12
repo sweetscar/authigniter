@@ -82,11 +82,106 @@ public $tokenExpiryTime = ['email_verification' => 1800, 'reset_password' => 360
 ```
 
 ## Services
+The following Services are provided by the package.
+
+##### authentication
+
+Provides access to any of the authentication packages. By default it will return the "Local Authentication" library, which is the basic password-based system.
+
+```php
+$authentication = service('authentication');
+```
+
+##### authorization
+
+Provides access to any of the authorization libraries. By default it will return the Default authorization library. It provides user group based permissions.
+
+```php
+$authorization = service('authorization');
+```
+
+##### account
+
+Provides access to any of the user account manager. By default it will return the Default Account Manager. Used to manage user account like create, update, delete activate, etc.
+
+```php
+$account = service('account');
+```
+
 ## Helper Functions
+
+##### authenticated()
+Check if user has logged in or not.
+- Parameters: None
+- Returns: ```true``` or ```false```
+
+##### user()
+Get detail of current logged user.
+- Parameters: None
+- Returns: Current logged user entity or ```null```
+
+##### in_group()
+Check if the current authenticated user is a member of a group.
+- Parameters: ```string``` Group name
+- Returns: ```true``` or ```false```
+
 ## User
-## Authentice The User
-## Authorize The User
-## Events
+
+This library uses CodeIgniter Entities for it's User object, and your application must also use that class. This class provides automatic password hashing.
+
+## Restricting Access
+
+First, edit application/Config/Filters.php and add the following entries to the aliases property:
+
+```php
+'authenticate'  => \SweetScar\AuthIgniter\Filters\AuthenticationFilter::class,
+'authorize'     => \SweetScar\AuthIgniter\Filters\AuthorizationFilter::class,
+```
+#### Authentice The User
+
+The authentication filter is restrict access if user not logged in. If user not logged in, user will redirected to login form. This filter not require additional parameters so you can use this filter to restrict the the user by URI pattern.
+
+```php
+public filters = [
+    'authenticate' => ['before' => ['account/*']],
+];
+```
+
+or restrict entire site:
+
+```php
+   public $globals = [
+        'before' => [
+            'honeypot',
+            'authenticate',
+    ...
+```
+
+Any single route can be restricted by adding the filter option to the last parameter in any of the route definition methods:
+
+```php
+$routes->get('admin', 'AdminController::index', ['filter' => 'authenticate']);
+```
+#### Authorize The User
+
+The authorizatin filter is used to restrict access to some routes based on groups authorization, this filter will check if user has logged in and check if user is member of spesific group or not. This filter require additional parameters, the name of group that allowed to access routes.
+
+For example, if you want to allow all user that is member of "admin" group only and restrict other group, it will look like this.
+
+```php
+$routes->get('admin', 'AdminController::index', ['filter' => 'authorize:admin']);
+```
+
+If any other logged user accessing to this routes and the user is not member of admin group, user will redirected to 403 Forbidden error, indicating that user does not have permission to access the page.
+
+>Tips:
+> If you want to allow all group to access the route, just put star (*) on the filter parameter,
+```php
+['filter' => 'authorize:*']
+```
+
+#### Events
+AuthIgniter trigger some important event that you may want to do something when the event is triggered.
 
 1. user_created (User $user)
 2. user_updated (User $user)

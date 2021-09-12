@@ -104,8 +104,7 @@ class Email
     public function send(): bool
     {
         $library = $this->config->emailLibraries[$this->library];
-        $emaiConfig = config('AuthIgniterEmail');
-        $email = new $library($emaiConfig);
+        $email = new $library();
 
         $emailSent = $email->send(
             $this->fromEmail,
