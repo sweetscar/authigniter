@@ -18,7 +18,7 @@ Currently this library has the following main features.
 
 ## Instalation
 
-#### Composer
+#### Composer Installation
 Assuming Composer is installed globally, you may use the following command:
 ```bash
 composer require sweetscar/authigniter
@@ -26,7 +26,7 @@ composer require sweetscar/authigniter
 This will add the SweetScar\AuthIgniter as a module to your project.
 
 **Note:** 
-This library is still in beta version. So you have to set the minimum stability of your project to "dev", or you can include the version explicitly when running ```composer require``` command.
+This library is still in beta version. So you have to set the minimum stability of your project to "beta", or you can include the version explicitly when running ```composer require``` command.
 
 Example:
 ```bash
