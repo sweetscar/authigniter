@@ -107,7 +107,7 @@ class AuthIgniter extends BaseConfig
      * 
      * @var bool
      */
-    public $enableForgotPassword = true;
+    public $enableForgotPassword = false;
 
     /**
      * Allow remembering

@@ -1,5 +1,3 @@
-# Authentication and Authorization Library for Codeigniter 4.
-
 This library provides an easy and simple way to create login, logout, and user registration features for your Codeigniter 4 projects.
 
 ## Requirements
@@ -66,7 +64,7 @@ public $emailLibraries = [
 ];
 public $defaultEmailLibrary = 'default';
 public $activeEmailNotifications = [];
-public $enableForgotPassword = true;
+public $enableForgotPassword = false;
 public $enableUsername = true;
 public $minimumUsernameLength = 8;
 public $maximumUsernameLength = 30;
