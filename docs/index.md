@@ -1,4 +1,4 @@
-This library provides an easy and simple way to create login, logout, and user registration features for your Codeigniter 4 projects.
+This library provides an easy and simple way to create login, logout, and user registration features for your CodeIgniter 4 projects.
 
 ## Requirements
 
@@ -14,15 +14,34 @@ Currently this library has the following main features.
 - Forgot password
 - Email verification
 - Email notification
-- User group
+- Group based authorization
 
 ## Instalation
 
-Installation is best done via Composer. Assuming Composer is installed globally, you may use the following command:
+#### Composer
+Assuming Composer is installed globally, you may use the following command:
 ```bash
 composer require sweetscar/authigniter
 ```
-This will add the latest stable release of SweetScar\AuthIgniter as a module to your project.
+This will add the SweetScar\AuthIgniter as a module to your project.
+
+**Note:** 
+This library is still in beta version. So you have to set the minimum stability of your project to "dev", or you can include the version explicitly when running ```composer require``` command.
+
+Example:
+```bash
+composer require sweetscar/authigniter:v1.0-beta
+```
+#### Manual Instalation
+If you choose not to use composer to install, You can download or clone this library repository then enable it by editing **app/Config/Autoload.php** and add the SweetScar\AuthIgniter namespace to the ```$psr4``` array. For example if you copied the library into **app/ThirdParty**:
+```php
+$psr4 = [
+    'Config'                => APPPATH . 'Config',
+    APP_NAMESPACE           => APPPATH,
+    'App'                   => APPPATH,
+    'SweetScar\AuthIgniter' => APPPATH .'ThirdParty/sweetscar/authigniter/src',
+];
+```
 
 ## Configuration
 
@@ -135,7 +154,7 @@ First, edit application/Config/Filters.php and add the following entries to the 
 'authenticate'  => \SweetScar\AuthIgniter\Filters\AuthenticationFilter::class,
 'authorize'     => \SweetScar\AuthIgniter\Filters\AuthorizationFilter::class,
 ```
-#### Authentice The User
+#### Authenticate Users
 
 The authentication filter is restrict access if user not logged in. If user not logged in, user will redirected to login form. This filter not require additional parameters so you can use this filter to restrict the the user by URI pattern.
 
@@ -160,6 +179,25 @@ Any single route can be restricted by adding the filter option to the last param
 ```php
 $routes->get('admin', 'AdminController::index', ['filter' => 'authenticate']);
 ```
+
+##### Logging out the user
+To perform the logout process, you simply create a form with the "POST" method, and navigate to the logout route. For example:
+```html
+<form action="/logout" method="POST">
+    <!-- don't forget to add csrf field -->
+    <button type="submit">Logout</button>
+</form>
+```
+
+You can use the helper from CodeIgniter ```route_to()``` and pass ```autigniter:logout``` in the parameters to fill out form action.
+Example:
+```php
+route_to('authigniter:logout');
+```
+
+**Note:** You may want to check all the named routes provided [here](#available-named-routes).
+
+
 #### Authorize The User
 
 The authorizatin filter is used to restrict access to some routes based on groups authorization, this filter will check if user has logged in and check if user is member of spesific group or not. This filter require additional parameters, the name of group that allowed to access routes.
@@ -181,11 +219,122 @@ If any other logged user accessing to this routes and the user is not member of 
 #### Events
 AuthIgniter trigger some important event that you may want to do something when the event is triggered.
 
-1. user_created (User $user)
-2. user_updated (User $user)
-3. user_deleted_permanently (User $user)
-4. user_deleted (User $user)
-5. user_activated (User $user)
-6. user_deactivated (User $user)
-7. user_logged_in (User $user)
-8. user_logged_out (User $user)
+- user_created (User $user)
+- user_updated (User $user)
+- user_deleted_permanently (User $user)
+- user_deleted (User $user)
+- user_activated (User $user)
+- user_deactivated (User $user)
+- user_logged_in (User $user)
+- user_logged_out (User $user)
+
+## Available Named Routes
+
+- ```GET``` ```authigniter:login``` | Show login page
+- ```POST``` ```authigniter:attemptLogin``` | Submit login form
+- ```POST``` ```authigniter:logout``` | Submit logout form
+- ```GET``` ```authigniter:register``` | Show registration form
+- ```POST``` ```authigniter:attemptRegister``` | Submit registration form
+
+**Only available if ```$enableForgotPassword``` in the Configuration is ```true```**
+
+- ```GET``` ```authigniter:forgotPassword``` | Show forgot password form
+- ```POST``` ```authigniter:attemptForgotPassword``` | Submit forgot password form
+- ```GET``` ```authigniter:resetPassword``` | Display reset password form
+- ```POST``` ```authigniter:attemptResetPassword``` | Submit reset password form
+- ```GET``` ```authigniter:resetPasswordResult``` | Show reset password result
+
+**Only available if ```$requireEmailVerification``` in the Configuration is ```true```**
+
+- ```GET``` ```authigniter:verifyEmail``` | Verify email and show the result
+
+## Available Commands
+
+- ai:create_user
+- ai:delete_user
+- ai:activate_user
+- ai:deactivate_user
+- ai:list_groups
+- ai:create_group
+- ai:update_group
+- ai:delete_group
+- ai:list_user_groups
+- ai:add_user_to_group
+- ai:remove_user_from_group
+
+Example usage:
+```bash
+php spark ai:create_user
+```
+
+## Customization
+
+Library customization is very easy to do. As a first step, Copy the configuration file from ```src/Config/AuthIgniter.php``` to ```app/Config/AuthIgniter.php``` and change class extend to ```SweetScar\AuthIgniter\Config\AuthIgniter```
+
+For example:
+```php
+<?php
+
+namespace SweetScar\AuthIgniter\Config;
+
+use CodeIgniter\Config\BaseConfig;
+
+class AuthIgniter extends BaseConfig
+{
+    //
+}
+```
+Change to:
+```php
+<?php
+
+namespace SweetScar\AuthIgniter\Config;
+
+use SweetScar\AuthIgniter\Config\AuthIgniter as AuthConfig;
+
+class AuthIgniter extends AuthConfig
+{
+    //
+}
+```
+
+Now, you can configure according to your project needs.
+
+**Note:**
+By default, AuthIgniter uses the CodeIgniter email library to send email. So, if you want to enable features related to sending email, like forgot password, email verification, notification, etc, please make sure the email configuration is done and make sure your project can send email.
+
+As an alternative, Currently AuthIgniter also provides a library for sending email using the services of the Netcore Email API. To use this email library, you must perform the following steps.
+
+First, make sure you already have an account at Netcore Email Api. If you don't, [Create here](https://netcorecloud.com/)
+
+Then get the API URL and API Key for your account from there.
+
+On your env file, Add the following variable:
+
+```
+authigniteremail.netcore.url = [Your email API URL]
+authigniteremail.netcore.api_key = [your API Key]
+```
+Now, change the default email library in AuthIgniter Config
+
+```php
+$defaultEmailLibrary = 'netcore';
+```
+and we are done.
+
+#### Customizing The View Templates
+
+If you want to use your own view file, just point the view configuration to the location of your view file.
+For example:
+```php
+public $views = [
+    'login' => 'auth/login',
+];
+```
+
+AuthIgniter extends view layouts to create login, register, etc. views. If you want to extend your view layout, simply update the ```$viewLayout``` configuration.
+For example:
+
+```php
+public $viewLayout = 'templates/layout';
+```
