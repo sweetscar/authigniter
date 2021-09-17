@@ -20,18 +20,12 @@ Currently this library has the following main features.
 
 #### Composer Installation
 Assuming Composer is installed globally, you may use the following command:
+
 ```bash
 composer require sweetscar/authigniter
 ```
 This will add the SweetScar\AuthIgniter as a module to your project.
 
-**Note:** 
-This library is still in beta version. So you have to set the minimum stability of your project to "beta", or you can include the version explicitly when running ```composer require``` command.
-
-Example:
-```bash
-composer require sweetscar/authigniter:v1.0-beta
-```
 #### Manual Instalation
 If you choose not to use composer to install, You can download or clone this library repository then enable it by editing **app/Config/Autoload.php** and add the SweetScar\AuthIgniter namespace to the ```$psr4``` array. For example if you copied the library into **app/ThirdParty**:
 ```php

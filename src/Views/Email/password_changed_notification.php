@@ -43,26 +43,6 @@
             padding: 15px 15px 15px 15px;
             text-align: center;
         }
-
-        .button {
-            -webkit-border-radius: 20px;
-            -moz-border-radius: 20px;
-            border-radius: 20px;
-            color: #FFFFFF;
-            font-family: Arial;
-            font-size: 20px;
-            font-weight: 400;
-            padding: 10px;
-            background-color: #3D94F6;
-            -webkit-box-shadow: 1px 1px 1px 0 #000000;
-            -moz-box-shadow: 1px 1px 1px 0 #000000;
-            box-shadow: 1px 1px 1px 0 #000000;
-            text-shadow: 1px 1px 20px #000000;
-            text-decoration: none;
-            display: inline-block;
-            cursor: pointer;
-            text-align: center;
-        }
     </style>
 </head>
 
