@@ -24,11 +24,6 @@ class AuthIgniter extends Migration
      */
     public function down()
     {
-        if ($this->db->DBDriver != 'SQLite3') {
-            $this->forge->dropForeignKey('authigniter_user_groups', 'user_id');
-            $this->forge->dropForeignKey('authigniter_user_groups', 'group_id');
-        }
-
         $this->forge->dropTable('users', true);
         $this->forge->dropTable('authigniter_groups', true);
         $this->forge->dropTable('authigniter_user_groups', true);
@@ -96,8 +91,6 @@ class AuthIgniter extends Migration
         $this->forge->addPrimaryKey('id');
         $this->forge->addKey('user_id');
         $this->forge->addKey('group_id');
-        $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
-        $this->forge->addForeignKey('group_id', 'authigniter_groups', 'id', '', 'CASCADE');
 
         $this->forge->createTable('authigniter_user_groups', true);
     }
