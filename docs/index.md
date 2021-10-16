@@ -92,6 +92,8 @@ public $maximumPasswordLength = 30;
 public $tokenExpiryTime = ['email_verification' => 1800, 'reset_password' => 3600];
 ```
 
+
+
 ## Services
 The following Services are provided by the package.
 
@@ -194,7 +196,28 @@ route_to('authigniter:logout');
 
 #### Authorize The User
 
-The authorizatin filter is used to restrict access to some routes based on groups authorization, this filter will check if user has logged in and check if user is member of spesific group or not. This filter require additional parameters, the name of group that allowed to access routes.
+The authorization filter is used to restrict access to some routes based on groups authorization, this filter will check if user has logged in and check if user is member of spesific group or not. This filter require additional parameters, the name of group that allowed to access routes.
+
+##### Creating Authorization Group
+
+To create a group, you simply run the command ai:create_group, Then you will be asked to enter the name and description of the group
+
+Consider the following example.
+
+```bash
+php spark ai:create_group admin "admin group description"
+```
+
+##### Adding user to group
+
+To add a user to a group, simply run this command:
+
+```bash
+php spark ai:add_user_to_group
+```
+Then you are asked to enter the desired user email and group name.
+
+##### Restricting by route
 
 For example, if you want to allow all user that is member of "admin" group only and restrict other group, it will look like this.
 
