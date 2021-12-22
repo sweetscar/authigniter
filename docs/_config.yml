@@ -1,4 +1,4 @@
-theme: jekyll-theme-architect
+theme: jekyll-theme-midnight
 title: AuthIgniter
 description: Authentication and authorization library for Codeigniter 4
 show_downloads: true
