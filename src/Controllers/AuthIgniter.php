@@ -315,7 +315,7 @@ class AuthIgniter extends BaseController
     /**
      * Try to reset user password
      */
-    public function attemptResetPassword($resetPasswordToken)
+    public function attemptResetPassword()
     {
         // if user has logged in, redirect to base url
         if ($this->authentication->check()) return redirect()->to(base_url());
@@ -336,7 +336,7 @@ class AuthIgniter extends BaseController
         }
 
         // verify the reset password token
-        $verifyToken = $this->resetPasswordToken->verify($resetPasswordToken);
+        $verifyToken = $this->resetPasswordToken->verify($this->request->getPost('token'));
 
         if (!$verifyToken) {
             return redirect('authigniter:resetPasswordResult')->with('reset_password_result', ['type' => 'error', 'message' => $this->resetPasswordToken->getErrorMessage()]);
