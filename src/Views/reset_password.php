@@ -13,9 +13,11 @@
                     <h4 class="text-center"><?= lang('AuthIgniter.resetPasswordPageTitle') ?></h4>
                 </div>
                 <div class="card-body">
-                    <form action="<?= route_to('authigniter:attemptResetPassword', $resetPasswordToken) ?>" method="POST">
+                    <form action="<?= route_to('authigniter:attemptResetPassword') ?>" method="POST">
 
                         <?= csrf_field() ?>
+
+                        <input type="hidden" name="token" value="<?= $resetPasswordToken ?>">
 
                         <div class="mb-3">
                             <input type="password" name="new-password" id="new-password" class="form-control <?= (session('errors.new-password')) ? 'is-invalid' : '' ?>" placeholder="<?= lang('AuthIgniter.newPassword') ?>" autofocus>
